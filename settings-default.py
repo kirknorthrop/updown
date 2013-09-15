@@ -1,3 +1,4 @@
 app_key = ''
 app_secret = ''
-file_location = ''
+template_file_location = ''
+output_file_location = ''

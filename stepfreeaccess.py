@@ -418,10 +418,10 @@ if __name__ == '__main__':
 				problems[problem] = get_problems_dict()[problem]
 
 	# Then create the HTML file.
-	mytemplate = Template(filename='index.tmpl')
+	mytemplate = Template(filename=settings.template_file_location + 'index.tmpl')
 	rendered_page = mytemplate.render(problems = problems, problems_sort = sorted(problems), resolved = resolved, resolved_sort = sorted(resolved), last_updated = datetime.strptime(get_problems_dict()['_last_updated'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d/%m'))
 
-	with open(settings.file_location + 'index.html', 'w') as f:
+	with open(settings.output_file_location + 'index.html', 'w') as f:
 		f.write(rendered_page)
 
 
