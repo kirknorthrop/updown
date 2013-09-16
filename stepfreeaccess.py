@@ -48,7 +48,7 @@ def create_twitter_last_statuses():
 		'LDNOverground' : 1,
 	}
 
-	with open('twitter_laststatuses.json', 'w') as f:
+	with open(settings.template_file_location + 'twitter_laststatuses.json', 'w') as f:
 		f.write(json.dumps(twitter_laststatuses))
 
 	return twitter_laststatuses
@@ -59,7 +59,7 @@ def get_twitter_last_statuses():
 
 	if twitter_last_statuses is None:
 		try:
-			with open('twitter_laststatuses.json', 'r') as f:
+			with open(settings.template_file_location + 'twitter_laststatuses.json', 'r') as f:
 				twitter_last_statuses = json.loads(f.read())
 		except IOError:
 			twitter_last_statuses = create_twitter_last_statuses()
@@ -76,7 +76,7 @@ def set_twitter_last_statuses(last_statuses):
 
 def save_twitter_last_statuses():
 	
-	with open('twitter_laststatuses.json', 'w') as f:
+	with open(settings.template_file_location + 'twitter_laststatuses.json', 'w') as f:
 		f.write(json.dumps(get_twitter_last_statuses()))
 
 	return True
@@ -88,7 +88,7 @@ def create_twitter_access_token():
 	twitter = Twython(APP_KEY, APP_SECRET, oauth_version = 2)
 	token = twitter.obtain_access_token()
 
-	with open('twitter_access_token', 'w') as f:
+	with open(settings.template_file_location + 'twitter_access_token', 'w') as f:
 		f.write(token)
 
 	return token
@@ -99,7 +99,7 @@ def get_twitter_access_token():
 
 	if access_token is None:
 		try:
-			with open('twitter_access_token', 'r') as f:
+			with open(settings.template_file_location + 'twitter_access_token', 'r') as f:
 				access_token = f.read()
 		except IOError:
 			access_token = create_twitter_access_token()
@@ -135,7 +135,7 @@ def create_problems_dict():
 
 	blank_problems_dict = {'_last_updated' : datetime.now().isoformat(), '_twitter_update' : '2000-01-01T00:00:00.000000', '_trackernet_update' : '2000-01-01T00:00:00.000000'}
 
-	with open('problems.json', 'w') as f:
+	with open(settings.template_file_location + 'problems.json', 'w') as f:
 		f.write(json.dumps(blank_problems_dict))
 
 	return blank_problems_dict
@@ -146,7 +146,7 @@ def get_problems_dict():
 
 	if problems_dict is None:
 		try:
-			with open('problems.json', 'r') as f:
+			with open(settings.template_file_location + 'problems.json', 'r') as f:
 				problems_dict = json.loads(f.read())
 		except IOError:
 			problems_dict = create_problems_dict()
@@ -165,7 +165,7 @@ def set_problems_dict(problems):
 
 def save_problems_dict():
 	
-	with open('problems.json', 'w') as f:
+	with open(settings.template_file_location + 'problems.json', 'w') as f:
 		f.write(json.dumps(get_problems_dict()))
 
 	return True

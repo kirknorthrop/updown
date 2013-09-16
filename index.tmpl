@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
 		<link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+		<link rel="stylesheet" type="text/css" href="http://tubetim.es/static/fontawesome/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="http://tubetim.es/static/fonts/receipt/MyFontsWebfontsKit.css">
 		<link rel="stylesheet" type="text/css" href="http://tubetim.es/static/tubetimes.css">
 	</head>
@@ -45,10 +46,15 @@
 						</tr>
 					% endfor
 				</table>
+			% else:
+				<p>
+					There are currently no reported step free access issues on London Underground, London Overground or the DLR.
+				</p>
 			% endif
 
-			<h3>Resolved issues</h3>
+			
 			% if len(resolved_sort) > 0:
+			<h3>Resolved issues</h3>
 				<table class="table table-striped">
 					<thead>
 						<th>Station</th>
