@@ -267,7 +267,6 @@ def check_trackernet():
 			problem = get_problem_for_station(station_name)
 
 			if problem['trackernet-text'] is None:
-				problem['station'] = station.station['name']
 				problem['trackernet-time'] = datetime.now().isoformat()
 				problem['trackernet-resolved'] = None
 
@@ -354,12 +353,12 @@ def update_problems():
 				# If it's resolved, see if it's old enough to delete
 				if problems[problem]['twitter-resolved']:
 					twitter_resolved = datetime.strptime(problems[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S')
-					if twitter_resolved + timedelta(hours = 2) < datetime.now():
+					if twitter_resolved + timedelta(hours = 12) < datetime.now():
 						problems_to_remove.append(problem)	
 				
 				if problems[problem]['trackernet-resolved']:
 					trackernet_resolved = datetime.strptime(problems[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f')
-					if trackernet_resolved + timedelta(hours = 2) < datetime.now():
+					if trackernet_resolved + timedelta(hours = 12) < datetime.now():
 						problems_to_remove.append(problem)
 
 			else:
