@@ -3,6 +3,7 @@ import requests
 import HTMLParser
 import json
 import pytz
+import re
 
 from pytz import timezone
 from datetime import datetime, timedelta
@@ -271,7 +272,8 @@ def check_trackernet():
 				problem['trackernet-resolved'] = None
 
 			# We always reset this just in case there is an update
-			problem['trackernet-text'] = station['statusdetails'].replace(' Call our Travel Information Centre on 0343 222 1234 if you need help planning your journey.', '')
+			matches = re.match('(.*?)Call our Travel Information Centre on 0[38]43 222 1234 if you need help planning your journey.?(.*?)', station['statusdetails'])
+			problem['trackernet-text'] = matches.group(1) + matches.group(2)
 
 			set_problem_for_station(station_name, problem)
 
