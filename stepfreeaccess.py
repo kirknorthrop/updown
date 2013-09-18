@@ -271,8 +271,6 @@ def check_trackernet():
 				problem['trackernet-time'] = datetime.now().isoformat()
 				problem['trackernet-resolved'] = None
 
-			station['statusdetails'] = "Blah blah blah. Blah blah blah"
-
 			# We always reset this just in case there is an update
 			matches = re.sub('[Cc]all.*0[38]43 ?222 ?1234.*journey\.?', '', station['statusdetails'])
 			problem['trackernet-text'] = matches
