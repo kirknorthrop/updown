@@ -59,8 +59,8 @@
 					<thead>
 						<th>Station</th>
 						<th>Problem</th>
-						<th>Resolved</th>
 						<th class="muted">Time To Resolve</th>
+						<th>Resolved</th>
 					% for problem in resolved_sort:
 						<tr>
 							<td>${problem}</td>
@@ -71,15 +71,15 @@
 									There is no step free access at this station.
 								% endif
 							</td>
+							<td class="muted">
+								${resolved[problem]['time-to-resolve']}
+							</td>
 							<td>
 								% if resolved[problem]['trackernet-resolved']:
 									${resolved[problem]['trackernet-resolved']}
 								% else:
 									${resolved[problem]['twitter-resolved']}
 								% endif
-							</td>
-							<td class="muted">
-								${resolved[problem]['time-to-resolve']}
 							</td>
 						</tr>
 					% endfor
