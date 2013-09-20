@@ -192,6 +192,7 @@ def get_problem_for_station(station):
 			'twitter-time' : None,
 			'twitter-resolved' : None,
 			'resolved' : False,
+			'time-to-resolve' : None,
 		}
 
 def set_problem_for_station(station, problem):
@@ -367,6 +368,10 @@ def update_problems():
 				# See if it should be resolved!
 				if problems[problem]['twitter-resolved'] or problems[problem]['trackernet-resolved']:
 					problems[problem]['resolved'] = True
+					# Work out how long it took them to resolve
+					start_time = datetime.strptime(problems[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S')
+					end_time = datetime.strptime(problems[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S')
+					problems[problem]['time-to-resolve'] = int((end_time - start_time).total_seconds())
 
 				# If is was something that was only put on twitter and never resolved - time out after 6 hours
 				elif problems[problem]['twitter-time'] and problems[problem]['trackernet-time'] is None and problems[problem]['trackernet-resolved'] is None and problems[problem]['twitter-resolved'] is None:
@@ -412,6 +417,11 @@ if __name__ == '__main__':
 				get_problems_dict()[problem]['trackernet-time'] = datetime.strptime(get_problems_dict()[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d/%m')
 			if get_problems_dict()[problem]['trackernet-resolved']:
 				get_problems_dict()[problem]['trackernet-resolved'] = datetime.strptime(get_problems_dict()[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d/%m')	
+
+			if get_problems_dict()[problem]['time-to-resolve']:
+				hours = str(get_problems_dict()[problem]['time-to-resolve'] / (60 * 60))
+				minutes = str((get_problems_dict()[problem]['time-to-resolve'] / 60) % 60)
+				get_problems_dict()[problem]['time-to-resolve'] = hours + ":" + minutes
 
 			if get_problems_dict()[problem]['resolved']:
 				resolved[problem] = get_problems_dict()[problem]

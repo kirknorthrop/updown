@@ -60,6 +60,7 @@
 						<th>Station</th>
 						<th>Problem</th>
 						<th>Resolved</th>
+						<th class="muted">Time To Resolve</th>
 					% for problem in resolved_sort:
 						<tr>
 							<td>${problem}</td>
@@ -76,6 +77,9 @@
 								% else:
 									${resolved[problem]['twitter-resolved']}
 								% endif
+							</td>
+							<td class="muted">
+								${resolved[problem]['time-to-resolve']}
 							</td>
 						</tr>
 					% endfor
