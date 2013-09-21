@@ -371,7 +371,7 @@ def update_problems():
 					# Work out how long it took them to resolve
 					start_time = datetime.strptime(problems[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S')
 					end_time = datetime.strptime(problems[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S')
-					problems[problem]['time-to-resolve'] = int((end_time - start_time).total_seconds())
+					problems[problem]['time-to-resolve'] = int((end_time - start_time).seconds)
 
 				# If is was something that was only put on twitter and never resolved - time out after 6 hours
 				elif problems[problem]['twitter-time'] and problems[problem]['trackernet-time'] is None and problems[problem]['trackernet-resolved'] is None and problems[problem]['twitter-resolved'] is None:
