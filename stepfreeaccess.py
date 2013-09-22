@@ -193,6 +193,7 @@ def get_problem_for_station(station):
 			'twitter-resolved' : None,
 			'resolved' : False,
 			'time-to-resolve' : None,
+			'new-problem': True,
 		}
 
 def set_problem_for_station(station, problem):
@@ -249,6 +250,16 @@ def twitter_needs_update():
 
 	return last_twitter + timedelta(minutes=2) < datetime.now()
 
+def send_tweet(tweet_text):
+	if settings.production:
+		twitter_sending = Twython(settings.app_key, settings.app_secret, settings.tubelifts_oauth_token, settings.tubelifts_oauth_token_secret)
+
+		twitter_sending.update_status(status=tweet_text)
+	else:
+		print "Should have tweeted: " + tweet_text
+
+
+
 
 # Do everything we need to check trackernet
 def check_trackernet():
@@ -275,6 +286,13 @@ def check_trackernet():
 			# We always reset this just in case there is an update
 			matches = re.sub('[Cc]all.*0[38]43 ?222 ?1234.*journey\.?', '', station['statusdetails'])
 			problem['trackernet-text'] = matches
+
+			if problem.get('new-problem', False):
+				# Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
+				tweet = 'No step free access reported at ' + station_name
+				send_tweet(tweet)
+
+			problem['new-problem'] = False
 
 			set_problem_for_station(station_name, problem)
 
@@ -319,6 +337,13 @@ def check_twitter():
 				problem['twitter-text'] = tweet['text']
 				problem['twitter-time'] = convert_tweet_time(tweet['created_at']).isoformat()
 				problem['twitter-resolved'] = None
+
+				if problem.get('new-problem', False):
+					# Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
+					tweet = 'No step free access reported at ' + station_name
+					send_tweet(tweet)
+
+				problem['new-problem'] = False
 
 				set_problem_for_station(station_name, problem)
 
@@ -373,6 +398,10 @@ def update_problems():
 					end_time = datetime.strptime(problems[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S')
 					problems[problem]['time-to-resolve'] = int((end_time - start_time).seconds)
 
+					# Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
+					tweet = 'Step free access has been restored at ' + station_name
+					send_tweet(tweet)
+
 				# If is was something that was only put on twitter and never resolved - time out after 6 hours
 				elif problems[problem]['twitter-time'] and problems[problem]['trackernet-time'] is None and problems[problem]['trackernet-resolved'] is None and problems[problem]['twitter-resolved'] is None:
 					twitter_time = datetime.strptime(problems[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S')
@@ -381,6 +410,10 @@ def update_problems():
 						problems[problem]['trackernet-resolved'] = datetime.now().isoformat()
 						problems[problem]['trackernet-text'] = "This issue was mentioned on Twitter but never resolved. Therefore we have marked it as resolved after 6 hours."
 						problems[problem]['resolved'] = True
+
+						# Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
+						tweet = 'There is no further new on step free access at ' + station_name
+						send_tweet(tweet)
 
 	for problem in problems_to_remove:
 		del(problems[problem])
