@@ -410,13 +410,13 @@ if __name__ == '__main__':
 		if problem[0:1] != '_':
 			# Make the times look readable
 			if get_problems_dict()[problem]['twitter-time']:
-				get_problems_dict()[problem]['twitter-time'] = datetime.strptime(get_problems_dict()[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S').strftime('%H:%M %d/%m')
+				get_problems_dict()[problem]['twitter-time'] = datetime.strptime(get_problems_dict()[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S').strftime('%H:%M %d %b')
 			if get_problems_dict()[problem]['twitter-resolved']:
-				get_problems_dict()[problem]['twitter-resolved'] = datetime.strptime(get_problems_dict()[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S').strftime('%H:%M %d/%m')
+				get_problems_dict()[problem]['twitter-resolved'] = datetime.strptime(get_problems_dict()[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S').strftime('%H:%M %d %b')
 			if get_problems_dict()[problem]['trackernet-time']:
-				get_problems_dict()[problem]['trackernet-time'] = datetime.strptime(get_problems_dict()[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d/%m')
+				get_problems_dict()[problem]['trackernet-time'] = datetime.strptime(get_problems_dict()[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')
 			if get_problems_dict()[problem]['trackernet-resolved']:
-				get_problems_dict()[problem]['trackernet-resolved'] = datetime.strptime(get_problems_dict()[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d/%m')	
+				get_problems_dict()[problem]['trackernet-resolved'] = datetime.strptime(get_problems_dict()[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')	
 
 			if get_problems_dict()[problem]['time-to-resolve']:
 				hours = str(get_problems_dict()[problem]['time-to-resolve'] / (60 * 60))
@@ -430,7 +430,7 @@ if __name__ == '__main__':
 
 	# Then create the HTML file.
 	mytemplate = Template(filename=settings.template_file_location + 'index.tmpl')
-	rendered_page = mytemplate.render(problems = problems, problems_sort = sorted(problems), resolved = resolved, resolved_sort = sorted(resolved), last_updated = datetime.strptime(get_problems_dict()['_last_updated'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d/%m'))
+	rendered_page = mytemplate.render(problems = problems, problems_sort = sorted(problems), resolved = resolved, resolved_sort = sorted(resolved), last_updated = datetime.strptime(get_problems_dict()['_last_updated'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b'))
 
 	with open(settings.output_file_location + 'index.html', 'w') as f:
 		f.write(rendered_page)

@@ -1,101 +1,131 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>tubetim.es</title>
+		<title>Up Down London</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
-		<link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-		<link rel="stylesheet" type="text/css" href="http://tubetim.es/static/fontawesome/css/font-awesome.min.css">
-		<link rel="stylesheet" type="text/css" href="http://tubetim.es/static/fonts/receipt/MyFontsWebfontsKit.css">
-		<link rel="stylesheet" type="text/css" href="http://tubetim.es/static/tubetimes.css">
+
+		<!-- Bootstrap -->
+		<link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+		<link href="static/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
+
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+		    <script src="static/bootstrap/assets/js/html5shiv.js"></script>
+		    <script src="static/bootstrap/assets/js/respond.min.js"></script>
+		<![endif]-->
+				
+		<!-- Our stuff -->
+		<link rel="stylesheet" type="text/css" href="static/fontawesome/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="static/updown.css">
+		<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
-		<div class="header">
-			<h1>
-				<span class="central">t</span><span class="circle" style="color: white">u</span><span class="district">b</span><span class="hammersmith-city" style="color: white">e</span><span class="jubilee">t</span><span class="metropolitan">i</span><span class="northern">m</span><span class="piccadilly">e</span><span class="victoria">s</span>
-			</h1>
-			<div class="nti">*** STAND BACK - TRAIN APPROACHING ***</div>
-		</div>
 		<div class="container">
-			<h1>No Step Free Access</h1>
-			<h4>Beta</h4>
+			<div class="row header-box">
+				<div class="col-md-6 col-md-offset-3">
+						<h1>
+							<i class="icon-arrow-up green"></i><i class="icon-arrow-down red"></i>
+							UP DOWN LONDON
+						</h1>
+			 			<p class="text-muted sub-h1">Lift status at Transport for London stations</p>
+				</div>
+			</div>
+			<div class="row menu-container">
+				<div class="col-md-6 col-md-offset-3 col-xs-12">
+			 		<div class="col-md-4 col-md-offset-2 col-xs-6 menu-item menu-item-active losenge-left">
+			 			Status
+			 		</div>
+			 		<a href="faq/" class="no-arrow no-bold">
+			 			<div class="col-md-4 col-xs-6 menu-item losenge-right">
+			 				FAQ
+			 			</div>
+			 		</a>
+			 	</div>
+			</div>
 
-			% if len(problems_sort) > 0:
-				<table class="table table-striped">
-					<thead>
-						<th>Station</th>
-						<th>Problem</th>
-						<th>Reported</th>
-					% for problem in problems_sort:
-						<tr>
-							<td>${problem}</td>
-							<td>
-								% if problems[problem]['trackernet-text']:
-									${problems[problem]['trackernet-text']}
-								% else:
-									There is no step free access at this station.
-								% endif
-							</td>
-							<td>
-								% if problems[problem]['trackernet-time']:
-									${problems[problem]['trackernet-time']}
-								% else:
-									${problems[problem]['twitter-time']}
-								% endif
-							</td>
-						</tr>
-					% endfor
-				</table>
-			% else:
-				<p>
-					There are currently no reported step free access issues on London Underground, London Overground or the DLR.
-				</p>
-			% endif
-
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3">
+					% if len(problems_sort) > 0:
+				 		<table class="table">
+							% for problem in problems_sort:
+								<tr>
+									<td class="problem-block"></td>
+									<td>
+										<p>
+											<b>${problem}</b>
+										</p>
+										<p>
+											% if problems[problem]['trackernet-text']:
+												${problems[problem]['trackernet-text']}
+											% else:
+												There is no step free access at this station.
+											% endif
+											<i>
+												% if problems[problem]['trackernet-time']:
+													${problems[problem]['trackernet-time']}
+												% else:
+													${problems[problem]['twitter-time']}
+												% endif
+											</i>
+										</p>
+									</td>
+								</tr>
+							% endfor
+						</table>
+					% else:
+				 		<p>
+							There are currently no reported step free access issues on London Underground, London Overground or the DLR.
+						</p>
+					% endif
+				</div>
+			</div>
 			
 			% if len(resolved_sort) > 0:
-			<h3>Resolved issues</h3>
-				<table class="table table-striped">
-					<thead>
-						<th>Station</th>
-						<th>Problem</th>
-						<th class="muted">Time To Resolve</th>
-						<th>Resolved</th>
-					% for problem in resolved_sort:
-						<tr>
-							<td>${problem}</td>
-							<td>
-								% if resolved[problem]['trackernet-text']:
-									${resolved[problem]['trackernet-text']}
-								% else:
-									There is no step free access at this station.
-								% endif
-							</td>
-							<td class="muted">
-								${resolved[problem]['time-to-resolve']}
-							</td>
-							<td>
-								% if resolved[problem]['trackernet-resolved']:
-									${resolved[problem]['trackernet-resolved']}
-								% else:
-									${resolved[problem]['twitter-resolved']}
-								% endif
-							</td>
-						</tr>
-					% endfor
-				</table>
+				<div class="row">
+					<div class="col-md-6 col-md-offset-3">
+						<h4>Resolved Issues</h4>
+						<table class="table">
+							% for problem in resolved_sort:
+								<tr>
+									<td class="resolved-block"></td>
+									<td>
+										<p>
+											<b>${problem}</b>
+										</p>
+										<p>
+											Step free access has now been restored at this station.
+											<i>
+												% if resolved[problem]['trackernet-resolved']:
+													${resolved[problem]['trackernet-resolved']}
+												% else:
+													${resolved[problem]['twitter-resolved']}
+												% endif
+												<span class="text-muted">${resolved[problem]['time-to-resolve']}</span>
+											</i>
+										</p>
+									</td>
+								</tr>
+							% endfor
+						</table>
+					</div>
+				</div>
 			% endif
 
-			<p>Call TfL's Travel Information Centre on 0343 222 1234 if you need help planning your journey.</p>
-			
-			<p>Last updated: ${last_updated}</p>
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3">
 
-			<p>
-				Seen an error? Any comments? Please <a href="mailto:tubetimes@jaggedseam.com">let us know</a>
-			</p>
-			<p class="muted" style="font-size: smaller; line-height: 1.2em;">
-				Things "coming soon" includes line colours. From an idea by Christiane Link. tubetimes Access uses data provided by Transport for London via their Trackernet service and Twitter feeds. &copy; Kirk Northrop 2013, with the exception of those assets, code and text provided by Twitter or TfL. If you want to use our transformed data in your website or app, <a href="mailto:tubetimes@jaggedseam.com" class="muted">drop us a line</a> and we'll see what we can do.
-			</p>
+					<p>Call TfL's Travel Information Centre on 0343 222 1234 if you need help planning your journey.</p>
+					
+					<p>Last updated: ${last_updated}</p>
+
+					<p>
+						Seen an error? Any comments? Please <a href="mailto:tubetimes@jaggedseam.com">let us know</a>
+					</p>
+					<p class="text-muted" style="font-size: smaller; line-height: 1.2em;">
+						From an idea by Christiane Link and inspired by <a href="http://sindre.at/updownvienna/" class="text-muted">Up Down Vienna</a>. Up Down London uses data provided by Transport for London. &copy; Kirk Northrop 2013, with the exception of status updates provided by TfL. If you want to use our transformed data in your website or app, <a href="mailto:tubetimes@jaggedseam.com" class="text-muted">drop us a line</a> and we'll see what we can do.
+					</p>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
