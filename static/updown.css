@@ -104,5 +104,10 @@ h1 {
 }
 
 .losenge-right {
-	 border-radius: 0px 5px 5px 0px;
+	border-radius: 0px 5px 5px 0px;
+}
+
+.question {
+	font-size: 1.5em;
+	font-weight: bold;
 }
