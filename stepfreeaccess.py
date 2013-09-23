@@ -415,7 +415,7 @@ def update_problems():
 						problems[problem]['resolved'] = True
 
 						# Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
-						tweet = 'There is no further new on step free access at ' + station_name
+						tweet = 'There is no further news on step free access at ' + problem
 						send_tweet(tweet)
 
 	for problem in problems_to_remove:

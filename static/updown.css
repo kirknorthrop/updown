@@ -60,6 +60,16 @@ h1 {
 	font-family: 'Montserrat';
 }
 
+h2 {
+	font-size: 18px;
+}
+
+h3 {
+	font-size: 14px;
+	font-weight: bold;
+	margin-top: 10px;
+}
+
 .green {
 	color: #0C0;
 }
@@ -94,6 +104,10 @@ h1 {
 	color: #fff;
 }
 
+.menu {
+	list-style: none;
+}
+
 .menu-item-active, .menu-item-active:hover {
 	background-color: #333;
 	color: #fff;
@@ -114,5 +128,5 @@ h1 {
 
 .twitter-follow-button, .twitter-mention-button {
 	height: 23px;
-vertical-align: text-bottom;
+	vertical-align: text-bottom;
 }

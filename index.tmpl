@@ -31,29 +31,28 @@
 				</div>
 			</div>
 			<div class="row menu-container">
-				<div class="col-md-6 col-md-offset-3 col-xs-12">
-			 		<div class="col-md-4 col-md-offset-2 col-xs-6 menu-item menu-item-active losenge-left">
+				<ul class="col-md-6 col-md-offset-3 col-xs-12 menu">
+			 		<li class="col-md-4 col-md-offset-2 col-xs-6 menu-item menu-item-active losenge-left">
 			 			Status
-			 		</div>
+			 		</li>
 			 		<a href="/faq/" class="no-arrow no-bold">
-			 			<div class="col-md-4 col-xs-6 menu-item losenge-right">
+			 			<li class="col-md-4 col-xs-6 menu-item losenge-right">
 			 				FAQ
-			 			</div>
+			 			</li>
 			 		</a>
-			 	</div>
+			 	</ul>
 			</div>
 
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
+					<h2>Current Issues</h2>
 					% if len(problems_sort) > 0:
 				 		<table class="table">
 							% for problem in problems_sort:
 								<tr>
 									<td class="problem-block"></td>
 									<td>
-										<p>
-											<b>${problem}</b>
-										</p>
+										<h3>${problem}</h3>
 										<p>
 											% if problems[problem]['trackernet-text']:
 												${problems[problem]['trackernet-text']}
@@ -83,15 +82,13 @@
 			% if len(resolved_sort) > 0:
 				<div class="row">
 					<div class="col-md-6 col-md-offset-3">
-						<h4>Resolved Issues</h4>
+						<h2>Resolved Issues</h2>
 						<table class="table">
 							% for problem in resolved_sort:
 								<tr>
 									<td class="resolved-block"></td>
 									<td>
-										<p>
-											<b>${problem}</b>
-										</p>
+										<h3>${problem}</h3>
 										<p>
 											Step free access has now been restored at this station.
 											<i>
@@ -146,4 +143,8 @@
 	<script src="http://code.jquery.com/jquery.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="static/bootstrap/js/bootstrap.min.js"></script>
+	<script src="static/jquery.fittext.js"></script>
+	<script>
+		jQuery("h1").fitText(1.25, { minFontSize: '30px' });
+	</script>
 </html>
