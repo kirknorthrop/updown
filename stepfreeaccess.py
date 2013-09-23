@@ -110,7 +110,7 @@ def get_twitter_access_token():
 
 # Getter and Creator for Station List
 def create_station_list():
-
+	# TODO: Save this and replace once a day
 	StationStatusURI = "http://cloud.tfl.gov.uk/TrackerNet/StationStatus"
 
 	r = requests.get(StationStatusURI)
@@ -250,12 +250,14 @@ def twitter_needs_update():
 
 	return last_twitter + timedelta(minutes=2) < datetime.now()
 
+# Send a tweet
 def send_tweet(tweet_text):
 	if settings.production:
 		try:
 			twitter_sending = Twython(settings.app_key, settings.app_secret, settings.tubelifts_oauth_token, settings.tubelifts_oauth_token_secret)
 
 			twitter_sending.update_status(status=tweet_text)
+		# Except everything. TODO: Look into some of twitters annoying foibles
 		except:
 			pass
 	else:
@@ -292,7 +294,10 @@ def check_trackernet():
 
 			if problem.get('new-problem', False):
 				# Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
-				tweet = 'No step free access reported at ' + station_name
+				tweet = station_name + ': ' + problem['trackernet-text']
+				if len(tweet) > 140:
+					tweet = 'No step free access reported at ' + station_name
+				
 				send_tweet(tweet)
 
 			problem['new-problem'] = False
@@ -466,7 +471,7 @@ if __name__ == '__main__':
 
 	# Then create the HTML file.
 	mytemplate = Template(filename=settings.template_file_location + 'index.tmpl')
-	rendered_page = mytemplate.render(problems = problems, problems_sort = sorted(problems), resolved = resolved, resolved_sort = sorted(resolved), last_updated = datetime.strptime(get_problems_dict()['_last_updated'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b'))
+	rendered_page = mytemplate.render(problems = problems, problems_sort = sorted(problems), resolved = resolved, resolved_sort = sorted(resolved), last_updated = datetime.strptime(get_problems_dict()['_last_updated'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b'), production = settings.production)
 
 	with open(settings.output_file_location + 'index.html', 'w') as f:
 		f.write(rendered_page)

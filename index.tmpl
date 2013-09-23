@@ -16,7 +16,11 @@
 				
 		<!-- Our stuff -->
 		<link rel="stylesheet" type="text/css" href="static/fontawesome/css/font-awesome.min.css">
-		<link rel="stylesheet" type="text/css" href="static/updown.css">
+		% if production:
+			<link rel="stylesheet" type="text/css" href="static/updown.min.css">
+		% else:
+			<link rel="stylesheet" type="text/css" href="static/updown.css">
+		% endif
 		<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
@@ -128,6 +132,9 @@
 			</div>
 		</div>
 	</body>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="http://code.jquery.com/jquery.js"></script>
+	<script src="static/jquery.fittext.js"></script>
 	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
 	</script>
 	<script>
@@ -139,11 +146,6 @@
 		ga('create', 'UA-44056681-1', 'tubetim.es');
 		ga('send', 'pageview');
 	</script>
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<script src="http://code.jquery.com/jquery.js"></script>
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="static/bootstrap/js/bootstrap.min.js"></script>
-	<script src="static/jquery.fittext.js"></script>
 	<script>
 		jQuery("h1").fitText(1.25, { minFontSize: '30px' });
 	</script>

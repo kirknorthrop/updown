@@ -16,7 +16,7 @@
 				
 		<!-- Our stuff -->
 		<link rel="stylesheet" type="text/css" href="/static/fontawesome/css/font-awesome.min.css">
-		<link rel="stylesheet" type="text/css" href="/static/updown.css">
+		<link rel="stylesheet" type="text/css" href="/static/updown.min.css">
 		<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
@@ -80,7 +80,7 @@
 						Can I use your data for my own website / app / etc?
 					</h3>
 					<p>
-						Yes, it should be okay but please contact us before. We might even be able to help you with your integration.
+						Yes, it should be okay but please contact us before so we can provide you with our machine readable feed. We might even be able to help you with your integration.
 					</p>
 					<h3>
 						How often do you update?
@@ -98,7 +98,7 @@
 						Do you have a Twitter account?
 					</h3>
 					<p>
-						Yes. You find it here.
+						Yes. You find it here. <a href="https://twitter.com/TubeLifts" class="twitter-follow-button" data-show-count="false">Follow @TubeLifts</a>
 					</p>
 					<h3>
 						Do you have a RSS feed?
@@ -127,6 +127,9 @@
 			</div>
 		</div>
 	</body>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="http://code.jquery.com/jquery.js"></script>
+	<script src="/static/jquery.fittext.js"></script>
 	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
 	</script>
 	<script>
@@ -138,11 +141,6 @@
 		ga('create', 'UA-44056681-1', 'tubetim.es');
 		ga('send', 'pageview');
 	</script>
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<script src="http://code.jquery.com/jquery.js"></script>
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="/static/bootstrap/js/bootstrap.min.js"></script>
-	<script src="/static/jquery.fittext.js"></script>
 	<script>
 		jQuery("h1").fitText(1.25, { minFontSize: '30px' });
 	</script>
