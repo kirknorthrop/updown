@@ -21,7 +21,7 @@ import settings
 APP_KEY = settings.app_key
 APP_SECRET = settings.app_secret
 
-TFL_NAME_CORRECTIONS = {'King\'s Cross' : 'King\'s Cross St. Pancras'}
+TFL_NAME_CORRECTIONS = {'King\'s Cross' : 'King\'s Cross St. Pancras', 'Cutty Sark': 'Cutty Sark for Maritime Greenwich'}
 
 access_token = None
 twitter_last_statuses = None
