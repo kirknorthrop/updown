@@ -402,7 +402,7 @@ def update_problems():
 					problems[problem]['time-to-resolve'] = int((end_time - start_time).seconds)
 
 					# Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
-					tweet = 'Step free access has been restored at ' + station_name
+					tweet = 'Step free access has been restored at ' + problem
 					send_tweet(tweet)
 
 				# If is was something that was only put on twitter and never resolved - time out after 6 hours
