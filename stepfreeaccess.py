@@ -252,9 +252,12 @@ def twitter_needs_update():
 
 def send_tweet(tweet_text):
 	if settings.production:
-		twitter_sending = Twython(settings.app_key, settings.app_secret, settings.tubelifts_oauth_token, settings.tubelifts_oauth_token_secret)
+		try:
+			twitter_sending = Twython(settings.app_key, settings.app_secret, settings.tubelifts_oauth_token, settings.tubelifts_oauth_token_secret)
 
-		twitter_sending.update_status(status=tweet_text)
+			twitter_sending.update_status(status=tweet_text)
+		except:
+			pass
 	else:
 		print "Should have tweeted: " + tweet_text
 
