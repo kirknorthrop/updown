@@ -50,36 +50,33 @@
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
 					<h2>Current Issues</h2>
-					% if len(problems_sort) > 0:
-				 		<table class="table">
+					<div class="current-issues">
+						% if len(problems_sort) > 0:
 							% for problem in problems_sort:
-								<tr>
-									<td class="problem-block"></td>
-									<td>
-										<h3>${problem}</h3>
-										<p>
-											% if problems[problem]['trackernet-text']:
-												${problems[problem]['trackernet-text']}
+								<div class="issue">
+									<h3>${problem}</h3>
+									<p>
+										% if problems[problem]['trackernet-text']:
+											${problems[problem]['trackernet-text']}
+										% else:
+											There is no step free access at this station.
+										% endif
+										<i>
+											% if problems[problem]['trackernet-time']:
+												${problems[problem]['trackernet-time']}
 											% else:
-												There is no step free access at this station.
+												${problems[problem]['twitter-time']}
 											% endif
-											<i>
-												% if problems[problem]['trackernet-time']:
-													${problems[problem]['trackernet-time']}
-												% else:
-													${problems[problem]['twitter-time']}
-												% endif
-											</i>
-										</p>
-									</td>
-								</tr>
+										</i>
+									</p>
+								</div>
 							% endfor
-						</table>
-					% else:
-				 		<p>
-							There are currently no reported step free access issues on London Underground, London Overground or the DLR.
-						</p>
-					% endif
+						% else:
+					 		<p>
+								There are currently no reported step free access issues on London Underground, London Overground or the DLR.
+							</p>
+						% endif
+					</div>
 				</div>
 			</div>
 			
@@ -87,31 +84,28 @@
 				<div class="row">
 					<div class="col-md-6 col-md-offset-3">
 						<h2>Resolved Issues</h2>
-						<table class="table">
+						<div class="resolved-issues">
 							% for problem in resolved_sort:
-								<tr>
-									<td class="resolved-block"></td>
-									<td>
-										<h3>${problem}</h3>
-										<p>
-											Step free access has now been restored at this station.
-											<i>
-												% if resolved[problem]['trackernet-resolved']:
-													${resolved[problem]['trackernet-resolved']}
-												% else:
-													${resolved[problem]['twitter-resolved']}
-												% endif
-												<!-- <span class="text-muted">${resolved[problem]['time-to-resolve']}</span> -->
-											</i>
-										</p>
-									</td>
-								</tr>
+								<div class="issue">
+									<h3>${problem}</h3>
+									<p>
+										Step free access has now been restored at this station.
+										<i>
+											% if resolved[problem]['trackernet-resolved']:
+												${resolved[problem]['trackernet-resolved']}
+											% else:
+												${resolved[problem]['twitter-resolved']}
+											% endif
+											<!-- <span class="text-muted">${resolved[problem]['time-to-resolve']}</span> -->
+										</i>
+									</p>
+								</div>
 							% endfor
-						</table>
+						</div>
 					</div>
 				</div>
 			% endif
-
+			<hr>
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
 					<p>Call TfL's Travel Information Centre on 0343 222 1234 if you need help planning your journey.</p>
