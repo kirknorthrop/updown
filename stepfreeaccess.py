@@ -338,22 +338,22 @@ def check_twitter():
 
 		 	if 'no step free access' in tweet_text.lower():
 				station_name = find_station_name(h.unescape(tweet_text))
+				if station_name:
+					problem = get_problem_for_station(station_name)
 
-				problem = get_problem_for_station(station_name)
+					problem['twitter-id'] = tweet['id']
+					problem['twitter-text'] = tweet['text']
+					problem['twitter-time'] = convert_tweet_time(tweet['created_at']).isoformat()
+					problem['twitter-resolved'] = None
 
-				problem['twitter-id'] = tweet['id']
-				problem['twitter-text'] = tweet['text']
-				problem['twitter-time'] = convert_tweet_time(tweet['created_at']).isoformat()
-				problem['twitter-resolved'] = None
+					if problem.get('new-problem', False):
+						# Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
+						tweet = 'No step free access reported at ' + station_name
+						send_tweet(tweet)
 
-				if problem.get('new-problem', False):
-					# Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
-					tweet = 'No step free access reported at ' + station_name
-					send_tweet(tweet)
+					problem['new-problem'] = False
 
-				problem['new-problem'] = False
-
-				set_problem_for_station(station_name, problem)
+					set_problem_for_station(station_name, problem)
 
 		 	elif 'step free access' in tweet_text.lower() and 'restored' in tweet_text.lower():
 		 		station_name = find_station_name(h.unescape(tweet_text))
