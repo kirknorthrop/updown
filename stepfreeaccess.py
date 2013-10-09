@@ -55,7 +55,7 @@ def create_twitter_last_statuses():
 	return twitter_laststatuses
 
 def get_twitter_last_statuses():
-	
+
 	global twitter_last_statuses
 
 	if twitter_last_statuses is None:
@@ -76,7 +76,7 @@ def set_twitter_last_statuses(last_statuses):
 	return True
 
 def save_twitter_last_statuses():
-	
+
 	with open(settings.template_file_location + 'twitter_laststatuses.json', 'w') as f:
 		f.write(json.dumps(get_twitter_last_statuses()))
 
@@ -111,9 +111,9 @@ def get_twitter_access_token():
 # Getter and Creator for Station List
 def create_station_list():
 	# TODO: Save this and replace once a day
-	StationStatusURI = "http://cloud.tfl.gov.uk/TrackerNet/StationStatus"
+	station_status_URI = "http://cloud.tfl.gov.uk/TrackerNet/StationStatus"
 
-	r = requests.get(StationStatusURI)
+	r = requests.get(station_status_URI)
 	xml = r.text
 	# CHECK RESPONSE CODE 200!
 	soup = BeautifulSoup(xml)
@@ -165,7 +165,7 @@ def set_problems_dict(problems):
 	return True
 
 def save_problems_dict():
-	
+
 	with open(settings.template_file_location + 'problems.json', 'w') as f:
 		f.write(json.dumps(get_problems_dict()))
 
@@ -209,7 +209,7 @@ def set_problem_for_station(station, problem):
 
 # Correlate a name from a tweet/trackernet with one we expect to find
 def find_station_name(possible_name):
-	
+
 	for station_name in get_station_list():
 		if station_name in possible_name:
 			return station_name
@@ -218,7 +218,7 @@ def find_station_name(possible_name):
 	for station_name in TFL_NAME_CORRECTIONS.keys():
 		if station_name in possible_name:
 			return TFL_NAME_CORRECTIONS[station_name]
-	
+
 
 # Convert the odd time that comes from twython to a sensible one
 def convert_tweet_time(time):
@@ -235,10 +235,10 @@ def get_twitter():
 
 	if twitter is None:
 		try:
-		 	twitter = Twython(APP_KEY, access_token = get_twitter_access_token())
-		 	twitter.get_user_timeline(screen_name='TFLOfficial')
+			twitter = Twython(APP_KEY, access_token = get_twitter_access_token())
+			twitter.get_user_timeline(screen_name='TFLOfficial')
 		except TwythonAuthError:
-		 	twitter = Twython(APP_KEY, access_token = create_twitter_access_token())
+			twitter = Twython(APP_KEY, access_token = create_twitter_access_token())
 
 	return twitter
 
@@ -297,7 +297,7 @@ def check_trackernet():
 				tweet = station_name + ': ' + problem['trackernet-text']
 				if len(tweet) > 140:
 					tweet = 'No step free access reported at ' + station_name
-				
+
 				send_tweet(tweet)
 
 			problem['new-problem'] = False
@@ -336,7 +336,7 @@ def check_twitter():
 		for tweet in user_timeline:
 			tweet_text = h.unescape(tweet['text'])
 
-		 	if 'no step free access' in tweet_text.lower():
+			if 'no step free access' in tweet_text.lower():
 				station_name = find_station_name(h.unescape(tweet_text))
 				if station_name:
 					problem = get_problem_for_station(station_name)
@@ -355,8 +355,8 @@ def check_twitter():
 
 					set_problem_for_station(station_name, problem)
 
-		 	elif 'step free access' in tweet_text.lower() and 'restored' in tweet_text.lower():
-		 		station_name = find_station_name(h.unescape(tweet_text))
+			elif 'step free access' in tweet_text.lower() and 'restored' in tweet_text.lower():
+				station_name = find_station_name(h.unescape(tweet_text))
 
 				problem = get_problem_for_station(station_name)
 
@@ -391,7 +391,7 @@ def update_problems():
 					twitter_resolved = datetime.strptime(problems[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S')
 					if twitter_resolved + timedelta(hours = 12) < datetime.now():
 						problems_to_remove.append(problem)	
-				
+
 				if problems[problem]['trackernet-resolved']:
 					trackernet_resolved = datetime.strptime(problems[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f')
 					if trackernet_resolved + timedelta(hours = 12) < datetime.now():
@@ -433,7 +433,7 @@ def update_problems():
 if __name__ == '__main__':
 
 	check_trackernet()
-	
+
 	if twitter_needs_update():
 		check_twitter()
 		save_twitter_last_statuses()
@@ -442,7 +442,7 @@ if __name__ == '__main__':
 	update_problems()
 
 	save_problems_dict()
-	
+
 	# Then split them into two dicts
 	problems = {}
 	resolved = {}
