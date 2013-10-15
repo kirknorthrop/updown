@@ -290,6 +290,7 @@ def check_trackernet():
 
 			# We always reset this just in case there is an update
 			matches = re.sub('[Cc]all.*0[38]43 ?222 ?1234.*journey\.?', '', station['statusdetails'])
+			matches = re.sub('we', 'TfL', matches, re.IGNORECASE)
 			problem['trackernet-text'] = matches
 
 			if problem.get('new-problem', False):
