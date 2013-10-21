@@ -118,7 +118,7 @@ def create_station_list():
 	# CHECK RESPONSE CODE 200!
 	soup = BeautifulSoup(xml)
 
-	return [station['name'] for station in soup.find_all('station')]
+	return list(reversed(sorted([station['name'] for station in soup.find_all('station')], key=len)))
 
 
 def get_station_list():
