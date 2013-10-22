@@ -274,54 +274,55 @@ def check_trackernet():
 	r = requests.get(StationIncidentsURI)
 	xml = r.text
 	# CHECK RESPONSE CODE 200!
-	soup = BeautifulSoup(xml)
+	if r.status_code == 200 and len(xml) > 0:
+		soup = BeautifulSoup(xml)
 
-	stations_in_trackernet = []
+		stations_in_trackernet = []
 
-	for station in soup.find_all('stationstatus'):
-		if station.status['id'] == 'NS':
-			station_name = find_station_name(station.station['name'])
+		for station in soup.find_all('stationstatus'):
+			if station.status['id'] == 'NS':
+				station_name = find_station_name(station.station['name'])
 
-			problem = get_problem_for_station(station_name)
+				problem = get_problem_for_station(station_name)
 
-			if problem['trackernet-text'] is None:
-				problem['trackernet-time'] = datetime.now().isoformat()
-				problem['trackernet-resolved'] = None
+				if problem['trackernet-text'] is None:
+					problem['trackernet-time'] = datetime.now().isoformat()
+					problem['trackernet-resolved'] = None
 
-			# We always reset this just in case there is an update
-			matches = re.sub('[Cc]all.*0[38]43 ?222 ?1234.*journey\.?', '', station['statusdetails'])
-			matches = re.sub('we ', 'TfL ', matches, re.IGNORECASE)
-			problem['trackernet-text'] = matches
+				# We always reset this just in case there is an update
+				matches = re.sub('[Cc]all.*0[38]43 ?222 ?1234.*journey\.?', '', station['statusdetails'])
+				matches = re.sub('we ', 'TfL ', matches, re.IGNORECASE)
+				problem['trackernet-text'] = matches
 
-			if problem.get('new-problem', False):
-				# Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
-				tweet = station_name + ': ' + problem['trackernet-text']
-				if len(tweet) > 140:
-					tweet = 'No step free access reported at ' + station_name
+				if problem.get('new-problem', False):
+					# Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
+					tweet = station_name + ': ' + problem['trackernet-text']
+					if len(tweet) > 140:
+						tweet = 'No step free access reported at ' + station_name
 
-				send_tweet(tweet)
+					send_tweet(tweet)
 
-			problem['new-problem'] = False
+				problem['new-problem'] = False
 
-			set_problem_for_station(station_name, problem)
+				set_problem_for_station(station_name, problem)
 
-			stations_in_trackernet.append(station_name)
+				stations_in_trackernet.append(station_name)
 
 
-	for problem_station in get_problems_dict().keys():
-		if problem_station[0:1] != '_':
-			# If we set a problem via trackernet but haven't resolved it, and it's not in the current issues list, mark it as resolved now.
-			if get_problems_dict()[problem_station]['trackernet-time'] is not None and get_problems_dict()[problem_station]['trackernet-resolved'] is None and problem_station not in stations_in_trackernet:
-				problem = get_problem_for_station(problem_station)
+		for problem_station in get_problems_dict().keys():
+			if problem_station[0:1] != '_':
+				# If we set a problem via trackernet but haven't resolved it, and it's not in the current issues list, mark it as resolved now.
+				if get_problems_dict()[problem_station]['trackernet-time'] is not None and get_problems_dict()[problem_station]['trackernet-resolved'] is None and problem_station not in stations_in_trackernet:
+					problem = get_problem_for_station(problem_station)
 
-				problem['trackernet-resolved'] = datetime.now().isoformat()
+					problem['trackernet-resolved'] = datetime.now().isoformat()
 
-				set_problem_for_station(problem_station, problem)
+					set_problem_for_station(problem_station, problem)
 
-	# And update the last time we saw trackernet
-	problems = get_problems_dict()
-	problems['_trackernet_update'] = datetime.now().isoformat()
-	set_problems_dict(problems)
+		# And update the last time we saw trackernet
+		problems = get_problems_dict()
+		problems['_trackernet_update'] = datetime.now().isoformat()
+		set_problems_dict(problems)
 
 
 # Do everything we need to check twitter
