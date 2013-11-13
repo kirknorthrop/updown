@@ -5,6 +5,7 @@ import json
 import pytz
 import re
 
+from copy import deepcopy
 from pytz import timezone
 from datetime import datetime, timedelta
 
@@ -430,6 +431,46 @@ def update_problems():
 
 	set_problems_dict(problems)
 
+def publish_android_json(problems_dict):
+	# JSON for the android app
+
+	# First copy the dict.
+	problems_dict = deepcopy(problems_dict)
+
+	# First things first, move all the non _ values into a problems array.
+	problems = []
+	deleted_stations = []
+	for station in problems_dict:
+		if station[0:1] != '_':
+			problems.append(problems_dict[station])
+			deleted_stations.append(station)
+
+	problems_dict['problems'] = problems
+
+	# Yeah, this is messy. I'm being lazy.
+	for station in deleted_stations:	
+		del problems_dict[station]
+
+	# Then delete unused stuff from the outer thing
+	del problems_dict['_twitter_update']
+	del problems_dict['_trackernet_update']
+
+	# Then delete crap from the stations and remove hyphens
+	for station in problems_dict['problems']:
+		del station['twitter-text']
+		del station['trackernet-resolved']
+		del station['twitter-resolved']
+		del station['twitter-id']
+		del station['new-problem']
+		del station['time-to-resolve']
+
+		# And for the remaining keys
+		for key in station.keys():
+			station[key.replace('-', '')] = station.pop(key)
+
+	# And output!
+	with open(settings.output_file_location + 'android-sc.json', 'w') as f:
+		f.write(json.dumps(problems_dict))
 
 
 if __name__ == '__main__':
@@ -444,6 +485,9 @@ if __name__ == '__main__':
 	update_problems()
 
 	save_problems_dict()
+
+	# Publish service JSONs
+	publish_android_json(get_problems_dict())
 
 	# Then split them into two dicts
 	problems = {}
