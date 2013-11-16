@@ -443,6 +443,7 @@ def publish_android_json(problems_dict):
 	for station in problems_dict:
 		if station[0:1] != '_':
 			problems.append(problems_dict[station])
+			problems_dict[station]['station'] = station
 			deleted_stations.append(station)
 
 	problems_dict['problems'] = problems
