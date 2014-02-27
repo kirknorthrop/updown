@@ -97,7 +97,7 @@ h3 {
 }
 
 .planned-maintenance .issue {
-	border-left: 1em solid #00C;
+	border-left: 1em solid #0CC;
 }
 
 .issue:nth-child(odd) {
