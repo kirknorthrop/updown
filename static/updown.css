@@ -96,7 +96,7 @@ h3 {
 	border-left: 1em solid #0C0;
 }
 
-.planned-maintenance.issue {
+.planned-maintenance .issue {
 	border-left: 1em solid #00C;
 }
 
