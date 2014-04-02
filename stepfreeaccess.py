@@ -491,7 +491,7 @@ if __name__ == '__main__':
 	save_problems_dict()
 
 	# Publish service JSONs
-	publish_android_json(get_problems_dict())
+	#publish_android_json(get_problems_dict())
 
 	# Then split them into two dicts
 	problems = {}
