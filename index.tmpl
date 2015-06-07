@@ -65,7 +65,7 @@
 									<p>
 										% if problems[problem]['tflwebsite-text']:
 											${problems[problem]['tflwebsite-text']}
-										% else problems[problem]['trackernet-text']:
+										% elif problems[problem]['trackernet-text']:
 											${problems[problem]['trackernet-text']}
 										% else:
 											There is no step free access at this station.
@@ -73,7 +73,7 @@
 										<i>
 											% if problems[problem]['tflwebsite-time']:
 												${problems[problem]['tflwebsite-time']}
-											% else problems[problem]['trackernet-time']:
+											% elif problems[problem]['trackernet-time']:
 												${problems[problem]['trackernet-time']}
 											% else:
 												${problems[problem]['twitter-time']}
@@ -104,7 +104,7 @@
 										<i>
 											% if resolved[problem]['tflwebsite-resolved']:
 												${resolved[problem]['tflwebsite-resolved']}
-											% else resolved[problem]['trackernet-resolved']:
+											% elif resolved[problem]['trackernet-resolved']:
 												${resolved[problem]['trackernet-resolved']}
 											% else:
 												${resolved[problem]['twitter-resolved']}
