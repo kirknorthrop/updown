@@ -135,7 +135,7 @@ def get_station_list():
 # Getter, Setter and Creator and Saver for Problems file
 def create_problems_dict():
 
-    blank_problems_dict = {'_last_updated' : datetime.now().isoformat(), '_twitter_update' : '2000-01-01T00:00:00.000000', '_trackernet_update' : '2000-01-01T00:00:00.000000'}
+    blank_problems_dict = {'_last_updated' : datetime.now().isoformat(), '_twitter_update' : '2000-01-01T00:00:00.000000', '_trackernet_update' : '2000-01-01T00:00:00.000000', '_tflwebsite_update' : '2000-01-01T00:00:00.000000', }
 
     with open(settings.template_file_location + 'problems.json', 'w') as f:
         f.write(json.dumps(blank_problems_dict))
@@ -188,6 +188,9 @@ def get_problem_for_station(station):
             'trackernet-text' : None,
             'trackernet-time' : None,
             'trackernet-resolved' : None,
+            'tflwebsite-text' : None,
+            'tflwebsite-time' : None,
+            'tflwebsite-resolved' : None,
             'twitter-id' : None,
             'twitter-text' : None,
             'twitter-time' : None,
@@ -212,12 +215,12 @@ def set_problem_for_station(station, problem):
 def find_station_name(possible_name):
 
     for station_name in get_station_list():
-        if station_name in possible_name:
+        if station_name.lower() in possible_name.lower():
             return station_name
 
     # If we don't find it in the proper list, we have to look in our corrections list
     for station_name in TFL_NAME_CORRECTIONS.keys():
-        if station_name in possible_name:
+        if station_name.lower() in possible_name.lower():
             return TFL_NAME_CORRECTIONS[station_name]
 
 
@@ -331,6 +334,77 @@ def check_trackernet():
         pass
 
 
+def check_tfl_status_page():
+
+    StatusPageURI = 'https://tfl.gov.uk/tube-dlr-overground/status/'
+
+    try:
+        r = requests.get(StatusPageURI)
+        xml = r.text
+        # CHECK RESPONSE CODE 200!
+        if r.status_code == 200 and len(xml) > 0:
+            soup = BeautifulSoup(xml)
+
+            stations_in_trackernet = []
+
+            for issue in soup.find_all(class_='rainbow-list-content'):
+                station = issue.p.text
+                if 'step free' in station.lower() or 'step-free' in station.lower():
+
+                    try:
+                        first_colon = station.index(':')
+
+                        station_name = find_station_name(station[0:first_colon])
+                        status_details = station[first_colon + 1:].strip()
+                        status_details = status_details.replace('No Step Free Access - ', '')
+
+                        problem = get_problem_for_station(station_name)
+
+                        if problem['tflwebsite-text'] is None:
+                            problem['tflwebsite-time'] = datetime.now().isoformat()
+                            problem['tflwebsite-resolved'] = None
+
+                        # We always reset this just in case there is an update
+                        matches = re.sub('(Please )?[Cc]all.*0[38]43 ?222 ?1234.*journey\.?', '', status_details)
+                        matches = re.sub('we ', 'TfL ', matches, re.IGNORECASE)
+                        if matches == '':
+                            matches = 'There is no step free access at this station.'
+                        problem['tflwebsite-text'] = matches
+
+                        if problem.get('new-problem', False):
+                            # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
+                            tweet = station_name + ': ' + problem['tflwebsite-text']
+                            if len(tweet) > 140:
+                                tweet = 'No step free access reported at ' + station_name
+
+                            send_tweet(tweet)
+
+                        problem['new-problem'] = False
+
+                        set_problem_for_station(station_name, problem)
+
+                        stations_in_trackernet.append(station_name)
+                    except ValueError:
+                        pass
+
+            for problem_station in get_problems_dict().keys():
+                if problem_station[0:1] != '_':
+                    # If we set a problem via trackernet but haven't resolved it, and it's not in the current issues list, mark it as resolved now.
+                    if get_problems_dict()[problem_station]['tflwebsite-time'] is not None and get_problems_dict()[problem_station]['tflwebsite-resolved'] is None and problem_station not in stations_in_trackernet:
+                        problem = get_problem_for_station(problem_station)
+
+                        problem['tflwebsite-resolved'] = datetime.now().isoformat()
+
+                        set_problem_for_station(problem_station, problem)
+
+            # And update the last time we saw trackernet
+            problems = get_problems_dict()
+            problems['_tflwebsite_update'] = datetime.now().isoformat()
+            set_problems_dict(problems)
+    except requests.exceptions.ConnectionError:
+        pass
+
+
 # Do everything we need to check twitter
 def check_twitter():
 
@@ -339,7 +413,7 @@ def check_twitter():
     twitter = get_twitter()
 
     for account in get_twitter_last_statuses().keys():
-        user_timeline = twitter.get_user_timeline(screen_name = account, since_id = get_twitter_last_statuses()[account])
+        user_timeline = twitter.get_user_timeline(screen_name=account, since_id=get_twitter_last_statuses()[account])
 
         for tweet in user_timeline:
             tweet_text = h.unescape(tweet['text'])
@@ -397,19 +471,25 @@ def update_problems():
                 # If it's resolved, see if it's old enough to delete
                 if problems[problem]['twitter-resolved']:
                     twitter_resolved = datetime.strptime(problems[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S')
-                    if twitter_resolved + timedelta(hours = 12) < datetime.now():
+                    if twitter_resolved + timedelta(hours=12) < datetime.now():
                         problems_to_remove.append(problem)
 
                 if problems[problem]['trackernet-resolved']:
                     trackernet_resolved = datetime.strptime(problems[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f')
-                    if trackernet_resolved + timedelta(hours = 12) < datetime.now():
+                    if trackernet_resolved + timedelta(hours=12) < datetime.now():
+                        problems_to_remove.append(problem)
+
+                if problems[problem]['tflwebsite-resolved']:
+                    trackernet_resolved = datetime.strptime(problems[problem]['tflwebsite-resolved'], '%Y-%m-%dT%H:%M:%S.%f')
+                    if trackernet_resolved + timedelta(hours=12) < datetime.now():
                         problems_to_remove.append(problem)
 
             else:
                 # See if it should be resolved!
-                if problems[problem]['twitter-resolved'] or problems[problem]['trackernet-resolved']:
+                if problems[problem]['twitter-resolved'] or problems[problem]['trackernet-resolved'] or problems[problem]['tflwebsite-resolved']:
                     problems[problem]['resolved'] = True
                     # Work out how long it took them to resolve
+
                     start_time = datetime.strptime(problems[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S')
                     end_time = datetime.strptime(problems[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S')
                     problems[problem]['time-to-resolve'] = int((end_time - start_time).seconds)
@@ -460,6 +540,7 @@ def publish_android_json(problems_dict):
     # Then delete unused stuff from the outer thing
     del problems_dict['_twitter_update']
     del problems_dict['_trackernet_update']
+    del problems_dict['_tflwebsite_update']
 
     # Then delete crap from the stations and remove hyphens
     for station in problems_dict['problems']:
@@ -481,11 +562,12 @@ def publish_android_json(problems_dict):
 
 if __name__ == '__main__':
 
+    check_tfl_status_page()
     check_trackernet()
 
-    if twitter_needs_update():
-        check_twitter()
-        save_twitter_last_statuses()
+    # if twitter_needs_update():
+    #     check_twitter()
+    #     save_twitter_last_statuses()
 
     # Then we need to see what's been resolved or whatever
     update_problems()
@@ -523,7 +605,7 @@ if __name__ == '__main__':
 
     # Then create the HTML file.
     mytemplate = Template(filename=settings.template_file_location + 'index.tmpl')
-    rendered_page = mytemplate.render(problems = problems, problems_sort = sorted(problems), resolved = resolved, resolved_sort = sorted(resolved), last_updated = datetime.strptime(get_problems_dict()['_last_updated'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b'), production = settings.production)
+    rendered_page = mytemplate.render(problems=problems, problems_sort=sorted(problems), resolved=resolved, resolved_sort=sorted(resolved), last_updated=datetime.strptime(get_problems_dict()['_last_updated'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b'), production=settings.production)
 
     with open(settings.output_file_location + 'index.html', 'w') as f:
         f.write(rendered_page)
