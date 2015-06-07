@@ -20,7 +20,7 @@
 		    <script src="static/bootstrap/assets/js/html5shiv.js"></script>
 		    <script src="static/bootstrap/assets/js/respond.min.js"></script>
 		<![endif]-->
-				
+
 		<!-- Our stuff -->
 		<link rel="stylesheet" type="text/css" href="static/fontawesome/css/font-awesome.min.css">
 		% if production:
@@ -63,13 +63,17 @@
 								<div class="issue">
 									<h3>${problem}</h3>
 									<p>
-										% if problems[problem]['trackernet-text']:
+										% if problems[problem]['tflwebsite-text']:
+											${problems[problem]['tflwebsite-text']}
+										% else problems[problem]['trackernet-text']:
 											${problems[problem]['trackernet-text']}
 										% else:
 											There is no step free access at this station.
 										% endif
 										<i>
-											% if problems[problem]['trackernet-time']:
+											% if problems[problem]['tflwebsite-time']:
+												${problems[problem]['tflwebsite-time']}
+											% else problems[problem]['trackernet-time']:
 												${problems[problem]['trackernet-time']}
 											% else:
 												${problems[problem]['twitter-time']}
@@ -86,7 +90,7 @@
 					</div>
 				</div>
 			</div>
-			
+
 			% if len(resolved_sort) > 0:
 				<div class="row">
 					<div class="col-md-6 col-md-offset-3">
@@ -98,7 +102,9 @@
 									<p>
 										Step free access has now been restored at this station.
 										<i>
-											% if resolved[problem]['trackernet-resolved']:
+											% if resolved[problem]['tflwebsite-resolved']:
+												${resolved[problem]['tflwebsite-resolved']}
+											% else resolved[problem]['trackernet-resolved']:
 												${resolved[problem]['trackernet-resolved']}
 											% else:
 												${resolved[problem]['twitter-resolved']}
@@ -121,7 +127,7 @@
 						<div class="issue">
 							<h3>King's Cross St. Pancras</h3>
 							<p>
-								<i>4 April 2014</i>									
+								<i>4 April 2014</i>
 								There will be no step-free access to the Hammersmith &amp; City, Circle and Metropolitan Lines.
 							</p>
 						</div>
@@ -135,13 +141,13 @@
 				<div class="col-md-6 col-md-offset-3">
 					<p>Call TfL's Travel Information Centre on 0343 222 1234 if you need help planning your journey.<br>
 						You can also call Transport for All on 020 7737 2339 (Mon - Fri 10am - 5pm) for advice.</p>
-					
+
 					<p>Last updated: ${last_updated}</p>
 				</div>
 			</div>
 			<hr>
 			<div class="row">
-				<div class="col-md-6 col-md-offset-3">	
+				<div class="col-md-6 col-md-offset-3">
 					<p>
 						Seen an error? Any comments? Please <a href="mailto:tubetimes@jaggedseam.com">let us know</a> <a href="https://twitter.com/TubeLifts" class="twitter-follow-button" data-show-count="false">Follow @TubeLifts</a>
 					</p>
