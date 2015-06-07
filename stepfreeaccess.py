@@ -592,6 +592,10 @@ if __name__ == '__main__':
                 get_problems_dict()[problem]['trackernet-time'] = datetime.strptime(get_problems_dict()[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')
             if get_problems_dict()[problem]['trackernet-resolved']:
                 get_problems_dict()[problem]['trackernet-resolved'] = datetime.strptime(get_problems_dict()[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')
+            if get_problems_dict()[problem]['tflwebsite-time']:
+                get_problems_dict()[problem]['tflwebsite-time'] = datetime.strptime(get_problems_dict()[problem]['tflwebsite-time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')
+            if get_problems_dict()[problem]['tflwebsite-resolved']:
+                get_problems_dict()[problem]['tflwebsite-resolved'] = datetime.strptime(get_problems_dict()[problem]['tflwebsite-resolved'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')
 
             if get_problems_dict()[problem]['time-to-resolve']:
                 hours = str(get_problems_dict()[problem]['time-to-resolve'] / (60 * 60))
