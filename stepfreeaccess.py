@@ -188,9 +188,9 @@ def get_problem_for_station(station):
             'trackernet-text' : None,
             'trackernet-time' : None,
             'trackernet-resolved' : None,
-            'tflwebsite-text' : None,
-            'tflwebsite-time' : None,
-            'tflwebsite-resolved' : None,
+            'tflapi-text' : None,
+            'tflapi-time' : None,
+            'tflapi-resolved' : None,
             'twitter-id' : None,
             'twitter-text' : None,
             'twitter-time' : None,
@@ -223,6 +223,8 @@ def find_station_name(possible_name):
         if station_name.lower() in possible_name.lower():
             return TFL_NAME_CORRECTIONS[station_name]
 
+    print station_name, 'not found'
+
 
 # Convert the odd time that comes from twython to a sensible one
 def convert_tweet_time(time):
@@ -254,6 +256,7 @@ def twitter_needs_update():
 
     return last_twitter + timedelta(minutes=2) < datetime.now()
 
+
 # Send a tweet
 def send_tweet(tweet_text):
     if settings.production:
@@ -266,8 +269,6 @@ def send_tweet(tweet_text):
             pass
     else:
         print "Should have tweeted: " + tweet_text
-
-
 
 
 # Do everything we need to check trackernet
@@ -334,48 +335,49 @@ def check_trackernet():
         pass
 
 
-def check_tfl_status_page():
+def check_tfl_api():
 
-    StatusPageURI = 'https://tfl.gov.uk/tube-dlr-overground/status/'
+    StatusPageURI = 'https://api.tfl.gov.uk/StopPoint/Mode/tube,cable-car,bus,dlr,national-rail,overground,river-bus,tflrail,tram/Disruption?includeRouteBlockedStops=True&app_id=%s&app_key=%s' % (settings.tfl_api_id, settings.tfl_api_key)
 
     try:
         r = requests.get(StatusPageURI)
-        xml = r.text
+        data = r.text
         # CHECK RESPONSE CODE 200!
-        if r.status_code == 200 and len(xml) > 0:
-            soup = BeautifulSoup(xml)
+        if r.status_code == 200 and len(data) > 0:
+            disruption = json.loads(data)
 
             stations_in_trackernet = []
 
-            for issue in soup.find_all(class_='rainbow-list-content'):
-                station = issue.p.text
-                if 'step free' in station.lower() or 'step-free' in station.lower():
+            for issue in disruption:
+                # station = issue.p.text
+                if 'step free' in issue['description'].lower() or 'step-free' in issue['description'].lower() or 'no lift service' in issue['description'].lower() or 'escalator' in issue['description'].lower():
 
                     try:
-                        first_colon = station.index(':')
+                        first_colon = issue['description'].index(':')
 
-                        station_name = find_station_name(station[0:first_colon])
-                        status_details = station[first_colon + 1:].strip()
+                        station_name = find_station_name(issue['commonName'])
+                        status_details = issue['description'][first_colon + 1:].strip()
                         status_details = status_details.replace('No Step Free Access - ', '')
 
                         problem = get_problem_for_station(station_name)
 
-                        if problem['tflwebsite-text'] is None:
-                            problem['tflwebsite-time'] = datetime.now().isoformat()
-                            problem['tflwebsite-resolved'] = None
+                        if problem['tflapi-text'] is None:
+                            problem['tflapi-time'] = datetime.now().isoformat()
+                            problem['tflapi-resolved'] = None
 
                         # We always reset this just in case there is an update
                         matches = re.sub('(Please )?[Cc]all.*0[38]43 ?222 ?1234.*journey\.?', '', status_details)
                         matches = re.sub('we ', 'TfL ', matches, re.IGNORECASE)
+                        matches = re.sub('member of staff', 'member of TfL staff', matches, re.IGNORECASE)
                         if matches == '':
-                            matches = 'There is no step free access at this station.'
-                        problem['tflwebsite-text'] = matches
+                            matches = 'There are step free access issues at this station.'
+                        problem['tflapi-text'] = matches
 
                         if problem.get('new-problem', False):
                             # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
-                            tweet = station_name + ': ' + problem['tflwebsite-text']
+                            tweet = station_name + ': ' + problem['tflapi-text']
                             if len(tweet) > 140:
-                                tweet = 'No step free access reported at ' + station_name
+                                tweet = 'Step free access issues reported at ' + station_name
 
                             send_tweet(tweet)
 
@@ -390,10 +392,10 @@ def check_tfl_status_page():
             for problem_station in get_problems_dict().keys():
                 if problem_station[0:1] != '_':
                     # If we set a problem via trackernet but haven't resolved it, and it's not in the current issues list, mark it as resolved now.
-                    if get_problems_dict()[problem_station]['tflwebsite-time'] is not None and get_problems_dict()[problem_station]['tflwebsite-resolved'] is None and problem_station not in stations_in_trackernet:
+                    if get_problems_dict()[problem_station]['tflapi-time'] is not None and get_problems_dict()[problem_station]['tflapi-resolved'] is None and problem_station not in stations_in_trackernet:
                         problem = get_problem_for_station(problem_station)
 
-                        problem['tflwebsite-resolved'] = datetime.now().isoformat()
+                        problem['tflapi-resolved'] = datetime.now().isoformat()
 
                         set_problem_for_station(problem_station, problem)
 
@@ -479,19 +481,19 @@ def update_problems():
                     if trackernet_resolved + timedelta(hours=12) < datetime.now():
                         problems_to_remove.append(problem)
 
-                if problems[problem]['tflwebsite-resolved']:
-                    trackernet_resolved = datetime.strptime(problems[problem]['tflwebsite-resolved'], '%Y-%m-%dT%H:%M:%S.%f')
+                if problems[problem]['tflapi-resolved']:
+                    trackernet_resolved = datetime.strptime(problems[problem]['tflapi-resolved'], '%Y-%m-%dT%H:%M:%S.%f')
                     if trackernet_resolved + timedelta(hours=12) < datetime.now():
                         problems_to_remove.append(problem)
 
             else:
                 # See if it should be resolved!
-                if problems[problem]['twitter-resolved'] or problems[problem]['trackernet-resolved'] or problems[problem]['tflwebsite-resolved']:
+                if problems[problem]['twitter-resolved'] or problems[problem]['trackernet-resolved'] or problems[problem]['tflapi-resolved']:
                     problems[problem]['resolved'] = True
                     # Work out how long it took them to resolve
 
-                    start_time = datetime.strptime(problems[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S')
-                    end_time = datetime.strptime(problems[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S')
+                    start_time = datetime.strptime(problems[problem]['tflapi-time'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S')
+                    end_time = datetime.strptime(problems[problem]['tflapi-resolved'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S')
                     problems[problem]['time-to-resolve'] = int((end_time - start_time).seconds)
 
                     # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
@@ -562,8 +564,9 @@ def publish_android_json(problems_dict):
 
 if __name__ == '__main__':
 
-    check_tfl_status_page()
-    check_trackernet()
+    # check_tfl_status_page()
+    check_tfl_api()
+    # check_trackernet()
 
     # if twitter_needs_update():
     #     check_twitter()
@@ -592,10 +595,10 @@ if __name__ == '__main__':
                 get_problems_dict()[problem]['trackernet-time'] = datetime.strptime(get_problems_dict()[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')
             if get_problems_dict()[problem]['trackernet-resolved']:
                 get_problems_dict()[problem]['trackernet-resolved'] = datetime.strptime(get_problems_dict()[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')
-            if get_problems_dict()[problem]['tflwebsite-time']:
-                get_problems_dict()[problem]['tflwebsite-time'] = datetime.strptime(get_problems_dict()[problem]['tflwebsite-time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')
-            if get_problems_dict()[problem]['tflwebsite-resolved']:
-                get_problems_dict()[problem]['tflwebsite-resolved'] = datetime.strptime(get_problems_dict()[problem]['tflwebsite-resolved'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')
+            if get_problems_dict()[problem]['tflapi-time']:
+                get_problems_dict()[problem]['tflapi-time'] = datetime.strptime(get_problems_dict()[problem]['tflapi-time'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')
+            if get_problems_dict()[problem]['tflapi-resolved']:
+                get_problems_dict()[problem]['tflapi-resolved'] = datetime.strptime(get_problems_dict()[problem]['tflapi-resolved'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%H:%M %d %b')
 
             if get_problems_dict()[problem]['time-to-resolve']:
                 hours = str(get_problems_dict()[problem]['time-to-resolve'] / (60 * 60))

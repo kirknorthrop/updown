@@ -5,3 +5,5 @@ output_file_location = '/public/'
 production = False
 tubelifts_oauth_token = ''
 tubelifts_oauth_token_secret = ''
+tfl_api_id = ''
+tfl_api_key = ''

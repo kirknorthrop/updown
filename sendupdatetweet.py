@@ -125,7 +125,7 @@ if __name__ == '__main__':
     if len(problems) == 0:
         tweet_string = salutation + " There are currently no reported step free access issues on the Transport for London network."
     else:
-        tweet_string = salutation + " There is no step free access at: "
+        tweet_string = salutation + " There are step free access issues at: "
         tweet_string += ', '.join(problems[0:-1])
         if len(problems) > 1:
             tweet_string += ' and '

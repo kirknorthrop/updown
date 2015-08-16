@@ -63,16 +63,16 @@
 								<div class="issue">
 									<h3>${problem}</h3>
 									<p>
-										% if problems[problem]['tflwebsite-text']:
-											${problems[problem]['tflwebsite-text']}
+										% if problems[problem]['tflapi-text']:
+											${problems[problem]['tflapi-text']}
 										% elif problems[problem]['trackernet-text']:
 											${problems[problem]['trackernet-text']}
 										% else:
 											There is no step free access at this station.
 										% endif
 										<i>
-											% if problems[problem]['tflwebsite-time']:
-												${problems[problem]['tflwebsite-time']}
+											% if problems[problem]['tflapi-time']:
+												${problems[problem]['tflapi-time']}
 											% elif problems[problem]['trackernet-time']:
 												${problems[problem]['trackernet-time']}
 											% else:
@@ -102,8 +102,8 @@
 									<p>
 										Step free access has now been restored at this station.
 										<i>
-											% if resolved[problem]['tflwebsite-resolved']:
-												${resolved[problem]['tflwebsite-resolved']}
+											% if resolved[problem]['tflapi-resolved']:
+												${resolved[problem]['tflapi-resolved']}
 											% elif resolved[problem]['trackernet-resolved']:
 												${resolved[problem]['trackernet-resolved']}
 											% else:
