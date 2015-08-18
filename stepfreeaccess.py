@@ -350,7 +350,7 @@ def check_tfl_api():
 
             for issue in disruption:
                 # station = issue.p.text
-                if 'step free' in issue['description'].lower() or 'step-free' in issue['description'].lower() or 'no lift service' in issue['description'].lower() or 'escalator' in issue['description'].lower():
+                if 'step free' in issue['description'].lower() or 'step-free' in issue['description'].lower() or 'no lift service' in issue['description'].lower():
 
                     try:
                         first_colon = issue['description'].index(':')
