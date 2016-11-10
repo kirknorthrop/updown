@@ -518,6 +518,29 @@ def update_problems():
 
     set_problems_dict(problems)
 
+
+def publish_alexa_file(problems_dict):
+
+    problems = []
+
+    for problem in problems_dict.keys():
+        if problem[0:1] != '_':
+            if not get_problems_dict()[problem]['resolved']:
+                problems.append(problem)
+
+    if len(problems) == 0:
+        tweet_string = "There are currently no reported step free access issues on the Transport for London network."
+    else:
+        tweet_string = "There are step free access issues at: "
+        tweet_string += ', '.join(problems[0:-1])
+        if len(problems) > 1:
+            tweet_string += ' and '
+        tweet_string += problems[-1]
+
+    with open(settings.output_file_location + 'problems.txt', 'w') as f:
+        f.write(tweet_string)
+
+
 def publish_android_json(problems_dict):
     # JSON for the android app
 
@@ -579,6 +602,7 @@ if __name__ == '__main__':
 
     # Publish service JSONs
     #publish_android_json(get_problems_dict())
+    publish_alexa_file(get_problems_dict())
 
     # Then split them into two dicts
     problems = {}
