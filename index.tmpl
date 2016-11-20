@@ -83,9 +83,9 @@
 										% endif
 										<i>
 											% if problems[problem]['tflapi-time']:
-												${problems[problem]['tflapi-time']} <span style="font-size: 0.65em;">(Source: API)</span>
+												<span title="API">${problems[problem]['tflapi-time']}</span>
 											% elif problems[problem]['trackernet-time']:
-												${problems[problem]['trackernet-time']} <span style="font-size: 0.65em;">(Source: Trackernet)</span>
+												<span title="Trackernet">${problems[problem]['trackernet-time']}</span>
 											% else:
 												${problems[problem]['twitter-time']}
 											% endif
