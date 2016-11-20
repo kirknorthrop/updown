@@ -35,25 +35,26 @@ twitter = None
 def create_twitter_last_statuses():
 
     twitter_laststatuses = {
-        'bakerlooline' : 1,
-        'centralline' : 1,
-        'circleline' : 1,
-        'districtline' : 1,
-        'hamandcityline' : 1,
-        'jubileeline' : 1,
-        'metline' : 1,
-        'northernline' : 1,
-        'piccadillyline' : 1,
-        'victorialine' : 1,
+        'bakerlooline': 1,
+        'centralline': 1,
+        'circleline': 1,
+        'districtline': 1,
+        'hamandcityline': 1,
+        'jubileeline': 1,
+        'metline': 1,
+        'northernline': 1,
+        'piccadillyline': 1,
+        'victorialine': 1,
         'wlooandcityline': 1,
-        'LondonDLR' : 1,
-        'LDNOverground' : 1,
+        'LondonDLR': 1,
+        'LDNOverground': 1,
     }
 
     with open(settings.template_file_location + 'twitter_laststatuses.json', 'w') as f:
         f.write(json.dumps(twitter_laststatuses))
 
     return twitter_laststatuses
+
 
 def get_twitter_last_statuses():
 
@@ -68,6 +69,7 @@ def get_twitter_last_statuses():
 
     return twitter_last_statuses
 
+
 def set_twitter_last_statuses(last_statuses):
 
     global twitter_last_statuses
@@ -75,6 +77,7 @@ def set_twitter_last_statuses(last_statuses):
     twitter_last_statuses = last_statuses
 
     return True
+
 
 def save_twitter_last_statuses():
 
@@ -87,13 +90,14 @@ def save_twitter_last_statuses():
 # Getter and Creator for twitter Access Token
 def create_twitter_access_token():
 
-    twitter = Twython(APP_KEY, APP_SECRET, oauth_version = 2)
+    twitter = Twython(APP_KEY, APP_SECRET, oauth_version=2)
     token = twitter.obtain_access_token()
 
     with open(settings.template_file_location + 'twitter_access_token', 'w') as f:
         f.write(token)
 
     return token
+
 
 def get_twitter_access_token():
 
@@ -135,12 +139,18 @@ def get_station_list():
 # Getter, Setter and Creator and Saver for Problems file
 def create_problems_dict():
 
-    blank_problems_dict = {'_last_updated' : datetime.now().isoformat(), '_twitter_update' : '2000-01-01T00:00:00.000000', '_trackernet_update' : '2000-01-01T00:00:00.000000', '_tflwebsite_update' : '2000-01-01T00:00:00.000000', }
+    blank_problems_dict = {
+        '_last_updated': datetime.now().isoformat(),
+        '_twitter_update': '2000-01-01T00:00:00.000000',
+        '_trackernet_update': '2000-01-01T00:00:00.000000',
+        '_tflwebsite_update': '2000-01-01T00:00:00.000000'
+    }
 
     with open(settings.template_file_location + 'problems.json', 'w') as f:
         f.write(json.dumps(blank_problems_dict))
 
     return blank_problems_dict
+
 
 def get_problems_dict():
 
@@ -155,6 +165,7 @@ def get_problems_dict():
 
     return problems_dict
 
+
 def set_problems_dict(problems):
 
     global problems_dict
@@ -164,6 +175,7 @@ def set_problems_dict(problems):
     problems_dict = problems
 
     return True
+
 
 def save_problems_dict():
 
@@ -185,20 +197,21 @@ def get_problem_for_station(station):
     else:
         # Send a blank problem
         return {
-            'trackernet-text' : None,
-            'trackernet-time' : None,
-            'trackernet-resolved' : None,
-            'tflapi-text' : None,
-            'tflapi-time' : None,
-            'tflapi-resolved' : None,
-            'twitter-id' : None,
-            'twitter-text' : None,
-            'twitter-time' : None,
-            'twitter-resolved' : None,
-            'resolved' : False,
-            'time-to-resolve' : None,
+            'trackernet-text': None,
+            'trackernet-time': None,
+            'trackernet-resolved': None,
+            'tflapi-text': None,
+            'tflapi-time': None,
+            'tflapi-resolved': None,
+            'twitter-id': None,
+            'twitter-text': None,
+            'twitter-time': None,
+            'twitter-resolved': None,
+            'resolved': False,
+            'time-to-resolve': None,
             'new-problem': True,
         }
+
 
 def set_problem_for_station(station, problem):
 
@@ -241,10 +254,10 @@ def get_twitter():
 
     if twitter is None:
         try:
-            twitter = Twython(APP_KEY, access_token = get_twitter_access_token())
+            twitter = Twython(APP_KEY, access_token=get_twitter_access_token())
             twitter.get_user_timeline(screen_name='TFLOfficial')
         except TwythonAuthError:
-            twitter = Twython(APP_KEY, access_token = create_twitter_access_token())
+            twitter = Twython(APP_KEY, access_token=create_twitter_access_token())
 
     return twitter
 
@@ -315,7 +328,6 @@ def check_trackernet():
                     set_problem_for_station(station_name, problem)
 
                     stations_in_trackernet.append(station_name)
-
 
             for problem_station in get_problems_dict().keys():
                 if problem_station[0:1] != '_':
@@ -640,6 +652,3 @@ if __name__ == '__main__':
 
     with open(settings.output_file_location + 'index.html', 'w') as f:
         f.write(rendered_page)
-
-
-
