@@ -601,7 +601,7 @@ if __name__ == '__main__':
 
     # check_tfl_status_page()
     check_tfl_api()
-    # check_trackernet()
+    check_trackernet()
 
     # if twitter_needs_update():
     #     check_twitter()
