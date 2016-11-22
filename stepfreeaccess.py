@@ -503,9 +503,20 @@ def update_problems():
                 if problems[problem]['twitter-resolved'] or problems[problem]['trackernet-resolved'] or problems[problem]['tflapi-resolved']:
                     problems[problem]['resolved'] = True
                     # Work out how long it took them to resolve
+                    if problems[problem]['tflapi-time']:
+                        start_time = datetime.strptime(problems[problem]['tflapi-time'], '%Y-%m-%dT%H:%M:%S.%f')
+                    elif problems[problem]['trackernet-time']:
+                        start_time = datetime.strptime(problems[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f')
+                    elif problems[problem]['twitter-time']:
+                        start_time = datetime.strptime(problems[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S')
 
-                    start_time = datetime.strptime(problems[problem]['tflapi-time'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['trackernet-time'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S')
-                    end_time = datetime.strptime(problems[problem]['tflapi-resolved'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f') or datetime.strptime(problems[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S')
+                    if problems[problem]['tflapi-resolved']:
+                        end_time = datetime.strptime(problems[problem]['tflapi-resolved'], '%Y-%m-%dT%H:%M:%S.%f')
+                    elif problems[problem]['trackernet-resolved']:
+                        end_time = datetime.strptime(problems[problem]['trackernet-resolved'], '%Y-%m-%dT%H:%M:%S.%f')
+                    elif problems[problem]['twitter-resolved']:
+                        end_time = datetime.strptime(problems[problem]['twitter-resolved'][0:19], '%Y-%m-%dT%H:%M:%S')
+
                     problems[problem]['time-to-resolve'] = int((end_time - start_time).seconds)
 
                     # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
