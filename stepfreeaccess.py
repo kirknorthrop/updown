@@ -22,7 +22,7 @@ import settings
 APP_KEY = settings.app_key
 APP_SECRET = settings.app_secret
 
-TFL_NAME_CORRECTIONS = {'King\'s Cross' : 'King\'s Cross St. Pancras', 'Cutty Sark': 'Cutty Sark for Maritime Greenwich'}
+TFL_NAME_CORRECTIONS = {'King\'s Cross': 'King\'s Cross St. Pancras', 'Cutty Sark': 'Cutty Sark for Maritime Greenwich'}
 
 access_token = None
 twitter_last_statuses = None
@@ -527,7 +527,7 @@ def update_problems():
                 elif problems[problem]['twitter-time'] and problems[problem]['trackernet-time'] is None and problems[problem]['trackernet-resolved'] is None and problems[problem]['twitter-resolved'] is None:
                     twitter_time = datetime.strptime(problems[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S')
 
-                    if twitter_time + timedelta(hours = 6) < datetime.now():
+                    if twitter_time + timedelta(hours=6) < datetime.now():
                         problems[problem]['trackernet-resolved'] = datetime.now().isoformat()
                         problems[problem]['trackernet-text'] = "This issue was mentioned on Twitter but never resolved. Therefore we have marked it as resolved after 6 hours."
                         problems[problem]['resolved'] = True
@@ -537,7 +537,8 @@ def update_problems():
                         send_tweet(tweet)
 
     for problem in problems_to_remove:
-        del(problems[problem])
+        if problem in problems:
+            del(problems[problem])
 
     set_problems_dict(problems)
 
