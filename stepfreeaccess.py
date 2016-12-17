@@ -330,7 +330,7 @@ def check_trackernet():
                     stations_in_trackernet.append(station_name)
 
             for problem_station in get_problems_dict().keys():
-                if problem_station[0:1] != '_':
+		if problem_station and problem_station[0:1] != '_':
                     # If we set a problem via trackernet but haven't resolved it, and it's not in the current issues list, mark it as resolved now.
                     if get_problems_dict()[problem_station]['trackernet-time'] is not None and get_problems_dict()[problem_station]['trackernet-resolved'] is None and problem_station not in stations_in_trackernet:
                         problem = get_problem_for_station(problem_station)
@@ -385,7 +385,7 @@ def check_tfl_api():
                             matches = 'There are step free access issues at this station.'
                         problem['tflapi-text'] = matches
 
-                        if problem.get('new-problem', False):
+                        if problem.get('new-problem', False) and station_name:
                             # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
                             tweet = station_name + ': ' + problem['tflapi-text']
                             if len(tweet) > 140:
@@ -402,7 +402,7 @@ def check_tfl_api():
                         pass
 
             for problem_station in get_problems_dict().keys():
-                if problem_station[0:1] != '_':
+                if problem_station and  problem_station[0:1] != '_':
                     # If we set a problem via trackernet but haven't resolved it, and it's not in the current issues list, mark it as resolved now.
                     if get_problems_dict()[problem_station]['tflapi-time'] is not None and get_problems_dict()[problem_station]['tflapi-resolved'] is None and problem_station not in stations_in_trackernet:
                         problem = get_problem_for_station(problem_station)
@@ -480,7 +480,7 @@ def update_problems():
     problems_to_remove = []
 
     for problem in problems.keys():
-        if problem[0:1] != '_':
+        if problem and problem[0:1] != '_':
             if problems[problem]['resolved']:
                 # If it's resolved, see if it's old enough to delete
                 if problems[problem]['twitter-resolved']:
@@ -547,7 +547,7 @@ def publish_alexa_file(problems_dict):
     problems = []
 
     for problem in problems_dict.keys():
-        if problem[0:1] != '_':
+        if problem and problem[0:1] != '_':
             if not get_problems_dict()[problem]['resolved']:
                 problems.append(problem)
 
@@ -632,7 +632,7 @@ if __name__ == '__main__':
     resolved = {}
 
     for problem in get_problems_dict().keys():
-        if problem[0:1] != '_':
+        if problem and problem[0:1] != '_':
             # Make the times look readable
             if get_problems_dict()[problem]['twitter-time']:
                 get_problems_dict()[problem]['twitter-time'] = datetime.strptime(get_problems_dict()[problem]['twitter-time'][0:19], '%Y-%m-%dT%H:%M:%S').strftime('%H:%M %d %b')
