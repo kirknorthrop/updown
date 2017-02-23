@@ -4,3 +4,4 @@ settings.py
 twitter_access_token
 twitter_laststatuses.json
 *.pyc
+problems.txt

@@ -1,4 +1,4 @@
-import json
+import jsondate as json
 import re
 import string
 
@@ -22,7 +22,7 @@ twitter = None
 # Getter and Creator for twitter Access Token
 def create_twitter_access_token():
 
-    twitter = Twython(APP_KEY, APP_SECRET, oauth_version = 2)
+    twitter = Twython(APP_KEY, APP_SECRET, oauth_version=2)
     token = twitter.obtain_access_token()
 
     with open(settings.template_file_location + 'twitter_access_token', 'w') as f:
@@ -117,7 +117,8 @@ if __name__ == '__main__':
 
     for problem in get_problems_dict().keys():
         if problem[0:1] != '_':
-            if not get_problems_dict()[problem]['resolved']:
+            if not get_problems_dict()[problem]['resolved'] and \
+                    not get_problems_dict()[problem]['information']:
                 problems.append(problem)
 
     salutation = get_salutation()

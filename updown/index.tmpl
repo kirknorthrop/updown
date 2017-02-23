@@ -53,18 +53,6 @@
 			 		</a>
 			 	</ul>
 			</div>
-			<!-- <div class="row">
-				<div class="col-md-6 col-md-offset-3">
-					<h2>Site Information</h2>
-					<div class="planned-maintenance">
-						<div class="issue">
-							<p>
-							Unfortunately, it seems we may be missing some issues at present. This is because the issues are not coming through to us from TfL. We have raised the issue with TfL and are trying to resolve the issue as soon as possible.
-							</p>
-						</div>
-					</div>
-				</div>
-			</div> -->
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
 					<h2>Current Issues</h2>
@@ -74,20 +62,14 @@
 								<div class="issue">
 									<h3>${problem}</h3>
 									<p>
-										% if problems[problem]['tflapi-text']:
-											${problems[problem]['tflapi-text']}
-										% elif problems[problem]['trackernet-text']:
-											${problems[problem]['trackernet-text']}
+										% if problems[problem]['text']:
+											${problems[problem]['text']}
 										% else:
 											There is no step free access at this station.
 										% endif
 										<i>
-											% if problems[problem]['tflapi-time']:
-												<span title="API">${problems[problem]['tflapi-time']}</span>
-											% elif problems[problem]['trackernet-time']:
-												<span title="Trackernet">${problems[problem]['trackernet-time']}</span>
-											% else:
-												${problems[problem]['twitter-time']}
+											% if problems[problem]['time']:
+												${problems[problem]['time']}
 											% endif
 										</i>
 									</p>
@@ -113,12 +95,8 @@
 									<p>
 										Step free access has now been restored at this station.
 										<i>
-											% if resolved[problem]['tflapi-resolved']:
-												${resolved[problem]['tflapi-resolved']}
-											% elif resolved[problem]['trackernet-resolved']:
-												${resolved[problem]['trackernet-resolved']}
-											% else:
-												${resolved[problem]['twitter-resolved']}
+											% if resolved[problem]['resolved']:
+												${resolved[problem]['resolved']}
 											% endif
 											<!-- <span class="text-muted">${resolved[problem]['time-to-resolve']}</span> -->
 										</i>
@@ -130,18 +108,24 @@
 				</div>
 			% endif
 
-			% if False:
+			% if len(information_sort) > 0:
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
-					<h2>Planned Maintenance</h2>
+					<h2>Information</h2>
 					<div class="planned-maintenance">
-						<div class="issue">
-							<h3>King's Cross St. Pancras</h3>
-							<p>
-								<i>4 April 2014</i>
-								There will be no step-free access to the Hammersmith &amp; City, Circle and Metropolitan Lines.
-							</p>
-						</div>
+						% for problem in information_sort:
+							<div class="issue">
+								<h3>${problem}</h3>
+								<p>
+									% if information[problem]['work_start']:
+										<i>From ${information[problem]['work_start']}</i>
+									% elif information[problem]['work_end']:
+										<i>Until ${information[problem]['work_end']}</i>
+									% endif
+									${information[problem]['text']}
+								</p>
+							</div>
+						% endfor
 					</div>
 				</div>
 			</div>
@@ -166,7 +150,7 @@
 						<a href="/press/">Press</a>
 					</p>
 					<p class="text-muted" style="font-size: smaller; line-height: 1.2em;">
-						From an idea by Christiane Link and inspired by <a href="http://www.ubahnaufzug.at" class="text-muted">Up Down Vienna</a>. Up Down London uses data provided by Transport for London, but is not affiliated with or endorsed by TfL. &copy; Up Down London 2016, except status updates provided by TfL. If you want to use our transformed data in your website or app, or want advice on setting up a similar site for your city <a href="mailto:tubetimes@jaggedseam.com" class="text-muted">drop us a line</a> and we'll see what we can do. <a href="/privacy/" class="text-muted">Privacy Policy</a>
+						From an idea by Christiane Link and inspired by <a href="http://www.ubahnaufzug.at" class="text-muted">Up Down Vienna</a>. Up Down London uses data provided by Transport for London, but is not affiliated with or endorsed by TfL. &copy; Up Down London 2017, except status updates provided by TfL. If you want to use our transformed data in your website or app, or want advice on setting up a similar site for your city <a href="mailto:tubetimes@jaggedseam.com" class="text-muted">drop us a line</a> and we'll see what we can do. <a href="/privacy/" class="text-muted">Privacy Policy</a>
 					</p>
 				</div>
 			</div>
