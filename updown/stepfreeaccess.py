@@ -319,12 +319,12 @@ def publish_alexa_file(problems_dict):
 
 
 def get_preferred_data(problem):
-    text = problem['text']
-    time = problem['time']
-    resolved = problem['resolved']
-    information = problem['information']
-    work_start = problem['work_start']
-    work_end = problem['work_end']
+    text = problem.get('text', None)
+    time = problem.get('time', None)
+    resolved = problem.get('resolved', None)
+    information = problem.get('information', None)
+    work_start = problem.get('work_start', None)
+    work_end = problem.get('work_end', None)
 
     for source in SOURCE_RELIABILITY_ORDER:
         if problem.get(source):
