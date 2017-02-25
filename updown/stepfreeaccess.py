@@ -266,8 +266,8 @@ def update_problems():
                     break
 
                 # Work out how long it took them to resolve
-                start_time = datetime.strptime(problems[problem]['time'], '%Y-%m-%dT%H:%M:%S')
-                end_time = datetime.strptime(problems[problem]['resolved'], '%Y-%m-%dT%H:%M:%S')
+                start_time = problems[problem]['time']
+                end_time = problems[problem]['resolved']
 
                 problems[problem]['time-to-resolve'] = int((end_time - start_time).seconds)
 
@@ -335,7 +335,7 @@ def get_preferred_data(problem):
                     (problem[source]['time'] and problem[source]['time'] < time):
                 time = problem[source]['time']
 
-            if (resolved is None and problem[source]['resolved']) or \
+            if (not resolved and problem[source]['resolved']) or \
                     (problem[source]['resolved'] and problem[source]['resolved'] < resolved):
                 resolved = problem[source]['resolved']
 
