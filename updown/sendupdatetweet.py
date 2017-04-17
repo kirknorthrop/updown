@@ -136,12 +136,12 @@ if __name__ == '__main__':
         # Too long, split it up!
         tweets = []
         current_tweet = ""
-        for word in tweet_string.split(' '):
-            if len(current_tweet + word + " ") > 130:
+        for station in tweet_string.split(', '):
+            if len(current_tweet + station + " ") > 130:
                 tweets.append(current_tweet)
-                current_tweet = word
+                current_tweet = station
             else:
-                current_tweet += " " + word
+                current_tweet += station + ', '
         else:
             tweets.append(current_tweet)
 
