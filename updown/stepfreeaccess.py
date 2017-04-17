@@ -155,24 +155,18 @@ def save_problems_dict():
     return True
 
 
-# Getter and Setter for problems at a station
-def get_problem_for_station(problems, station):
+# # Getter and Setter for problems at a station
+# def get_problem_for_station(problems, station):
 
-    # problems = get_problems_dict()
+#     # problems = get_problems_dict()
 
-    if problems.get(station, None) is not None:
-        # Then we already have a problem at this station
-        return problems[station]
+#     if problems.get(station, None) is not None:
+#         # Then we already have a problem at this station
+#         return problems[station]
 
-    else:
-        # Send a blank problem
-        return {
-            'sources': {
-            },
-            'resolved': False,
-            'time-to-resolve': None,
-            'new-problem': True,
-        }
+#     else:
+#         # Send a blank problem
+#         return BLANK_PROBLEM
 
 
 def set_problem_for_station(station, problem):
@@ -326,6 +320,8 @@ def get_preferred_data(problem):
     work_start = problem.get('work_start', None)
     work_end = problem.get('work_end', None)
 
+    resolutions = []
+
     for source in SOURCE_RELIABILITY_ORDER:
         if problem.get(source):
             if not text:
@@ -334,10 +330,6 @@ def get_preferred_data(problem):
             if (time is None and problem[source]['time']) or \
                     (problem[source]['time'] and problem[source]['time'] < time):
                 time = problem[source]['time']
-
-            if (not resolved and problem[source]['resolved']) or \
-                    (problem[source]['resolved'] and problem[source]['resolved'] < resolved):
-                resolved = problem[source]['resolved']
 
             if problem[source]['information'] is not None:
                 information = problem[source]['information']
@@ -350,7 +342,40 @@ def get_preferred_data(problem):
                     (problem[source]['work_end'] and problem[source]['work_end'] < work_end):
                 work_end = problem[source]['work_end']
 
+            # Because of persistent problems, we now only mark resolved if all sources agree
+            # We gather them here and process them below.
+            resolutions.append(problem[source].get('resolved'))
+
+    if all(resolutions):
+        # Get the last resolution
+        resolved = sorted(resolutions)[-1]
+    else:
+        resolved = None
+
     return text, time, resolved, information, work_start, work_end
+
+
+def check_for_resolved(problems_dict, source_id, source):
+    # See if anything is missing from the sources that is in the x
+    # problems dict. This is only where they don't have an explicit
+    # resolve which is pretty much only Twitter.
+    if not getattr(scs, source_id).EXPLICIT_RESOLVE:
+        missing_for_source = [x for x in problems_dict.keys() if x not in source.keys()]
+        for station in missing_for_source:
+            if problems_dict[station].get(source_id):
+                problems_dict[station][source_id]['resolved'] = datetime.now()
+
+
+def update_problems_from_source(source_id, source, problems):
+    for station, problem in source.items():
+        if station not in problems:
+            problems[station] = {
+                'resolved': False,
+                'time-to-resolve': None,
+                'new-problem': True,
+            }
+
+        problems[station][source_id] = problem
 
 
 def blah():
@@ -362,23 +387,12 @@ def blah():
         'trackernet': trackernet.check(),
     }
 
-    # See if anything is missing from the sources that is in the x
-    # problems dictThis is only where they don't have an explicit
-    # resolve which is pretty much only Twitter.
-    for source in sources.keys():
-        if not getattr(scs, source).EXPLICIT_RESOLVE:
-            missing_for_source = [x for x in problems_dict.keys() if x not in sources[source].keys()]
-            for station in missing_for_source:
-                if problems_dict[station].get(source):
-                    problems_dict[station][source]['resolved'] = datetime.now()
+    for source in sources:
+        check_for_resolved(problems_dict, source, sources[source])
 
     # So then let's go through the new problems and add them in.
     for source, problems in sources.items():
-        for station, problem in problems.items():
-            if station not in problems_dict:
-                problems_dict[station] = get_problem_for_station(problems_dict, station)
-
-            problems_dict[station][source] = problem
+        update_problems_from_source(source, problems, problems_dict)
 
     # Then get the preferred, updated data, and put that at the top level
     for station, problem in problems_dict.items():
@@ -390,8 +404,6 @@ def blah():
         problem['information'] = information
         problem['work_start'] = work_start
         problem['work_end'] = work_end
-
-    #
 
     # Then we need to see what's been resolved and tweet about it
     update_problems()
