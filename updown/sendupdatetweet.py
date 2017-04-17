@@ -114,6 +114,7 @@ def get_salutation():
 if __name__ == '__main__':
 
     problems = []
+    tweets = []
 
     for problem in get_problems_dict().keys():
         if problem[0:1] != '_':
@@ -121,38 +122,47 @@ if __name__ == '__main__':
                     not get_problems_dict()[problem]['information']:
                 problems.append(problem)
 
+    problems = sorted(problems)
+
     salutation = get_salutation()
 
     if len(problems) == 0:
-        tweet_string = salutation + " There are currently no reported step free access issues on the Transport for London network."
+        tweets.append(salutation + ' There are currently no reported step free access issues on the Transport for London network.')
     else:
-        tweet_string = salutation + " There are step free access issues at: "
-        tweet_string += ', '.join(problems[0:-1])
-        if len(problems) > 1:
-            tweet_string += ' and '
-        tweet_string += problems[-1]
+        tweet_string = salutation + ' There are step free access issues at: '
 
-    if len(tweet_string) > 140:
-        # Too long, split it up!
-        tweets = []
-        current_tweet = ""
-        for station in tweet_string.split(', '):
-            if len(current_tweet + station + " ") > 130:
-                tweets.append(current_tweet)
-                current_tweet = station
-            else:
-                current_tweet += station + ', '
+        # So see if the tweet is too long
+        # Bear in mind we will be adding 'and' between the last two
+        # and (1/2) if there is more than one tweet.
+        # So a single tweet can be 135, multiple 130 each.
+        if len(tweet_string + ', '.join(problems)) < 135:
+            tweet_string += ', '.join(problems[0:-1])
+            if len(problems) > 1:
+                tweet_string += ' and '
+            tweet_string += problems[-1]
+            tweets.append(tweet_string)
         else:
-            tweets.append(current_tweet)
+            # Too long, split it up!
+            for i, station in enumerate(problems):
+                if len(tweet_string + station + ' ') > 130:
+                    if tweet_string[-2:] == ', ':
+                        tweet_string = tweet_string[0:-2] + '...'
+                    tweets.append(tweet_string)
+                    tweet_string = '... '
 
-        for i in range(len(tweets)):
-            if i is not 0:
-                tweets[i] = "... " + tweets[i]
-            tweets[i] = tweets[i] + " (%d/%d)" % (i + 1, len(tweets))
+                tweet_string += station
 
-        for tweet in tweets:
-            send_tweet(tweet)
+                if i == len(problems) - 2:
+                    tweet_string += ' and '
+                elif i < len(problems) - 2:
+                    tweet_string += ', '
 
-    else:
-        #Tweet it
-        send_tweet(tweet_string)
+            if tweet_string:
+                tweets.append(tweet_string)
+
+            if len(tweets) > 1:
+                for i in range(len(tweets)):
+                    tweets[i] = tweets[i] + " (%d/%d)" % (i + 1, len(tweets))
+
+    for tweet in tweets:
+        send_tweet(tweet)
