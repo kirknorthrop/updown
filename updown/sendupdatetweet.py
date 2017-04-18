@@ -116,21 +116,14 @@ def get_salutation():
 
 if __name__ == '__main__':
 
-    problems = []
+    problems = utils.get_problem_stations(get_problems_dict())
     tweets = []
-
-    for problem in get_problems_dict().keys():
-        if problem[0:1] != '_':
-            if not get_problems_dict()[problem]['resolved'] and \
-                    not get_problems_dict()[problem]['information']:
-                problems.append(problem)
-
-    problems = sorted(problems)
 
     salutation = get_salutation()
 
     if len(problems) == 0:
-        tweets.append(salutation + ' There are currently no reported step free access issues on the Transport for London network.')
+        tweets.append(salutation + ' There are currently no reported step free access issues \
+            on the Transport for London network.')
     else:
         tweet_string = salutation + ' There are step free access issues at: '
 

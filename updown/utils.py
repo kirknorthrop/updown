@@ -96,3 +96,15 @@ def find_dates(text):
             start_date = start_date.replace(year=start_date.year - 1)
 
     return start_date, end_date
+
+
+def get_problem_stations(problems_dict):
+    problems = []
+
+    for problem in problems_dict:
+        if problem and problem[0:1] != '_':
+            if not problems_dict[problem]['resolved'] and \
+                    not problems_dict[problem]['information']:
+                problems.append(problem)
+
+    return sorted(problems)

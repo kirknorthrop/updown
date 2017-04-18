@@ -270,13 +270,7 @@ def update_problems():
 
 def publish_alexa_file(problems_dict):
 
-    problems = []
-
-    for problem in problems_dict:
-        if problem and problem[0:1] != '_':
-            if not problems_dict[problem]['resolved'] and \
-                    not problems_dict[problem]['information']:
-                problems.append(problem)
+    problems = utils.get_problem_stations(problems_dict)
 
     if len(problems) == 0:
         tweet_string = "There are currently no reported step free access issues on the Transport for London network."
