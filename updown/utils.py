@@ -1,22 +1,10 @@
-import requests
-import arrow
-# import HTMLParser
-# import json
-# import pytz
 import re
 
-# from copy import deepcopy
-# from pytz import timezone
-from datetime import datetime, timedelta
-
-# from twython import Twython
-# from twython.exceptions import TwythonAuthError
-
-# from mako.template import Template
+import arrow
+import requests
 
 from bs4 import BeautifulSoup
 
-# import settings
 
 TFL_NAME_CORRECTIONS = {
     'King\'s Cross': 'King\'s Cross St. Pancras',

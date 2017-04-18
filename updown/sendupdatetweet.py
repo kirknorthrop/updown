@@ -1,14 +1,10 @@
 import jsondate as json
-import re
-import string
-
-from pytz import timezone
-from datetime import datetime, timedelta
 
 from twython import Twython
 from twython.exceptions import TwythonAuthError
 
 import settings
+import utils
 
 # Some "constants" and globals
 APP_KEY = settings.app_key
@@ -48,7 +44,11 @@ def get_twitter_access_token():
 # Getter, Setter and Creator and Saver for Problems file
 def create_problems_dict():
 
-    blank_problems_dict = {'_last_updated' : datetime.now().isoformat(), '_twitter_update' : '2000-01-01T00:00:00.000000', '_trackernet_update' : '2000-01-01T00:00:00.000000'}
+    blank_problems_dict = {
+        '_last_updated': datetime.now().isoformat(),
+        '_twitter_update': '2000-01-01T00:00:00.000000',
+        '_trackernet_update': '2000-01-01T00:00:00.000000'
+    }
 
     with open(settings.template_file_location + 'problems.json', 'w') as f:
         f.write(json.dumps(blank_problems_dict))
@@ -77,10 +77,10 @@ def get_twitter():
 
     if twitter is None:
         try:
-            twitter = Twython(APP_KEY, access_token = get_twitter_access_token())
+            twitter = Twython(APP_KEY, access_token=get_twitter_access_token())
             twitter.get_user_timeline(screen_name='TFLOfficial')
         except TwythonAuthError:
-            twitter = Twython(APP_KEY, access_token = create_twitter_access_token())
+            twitter = Twython(APP_KEY, access_token=create_twitter_access_token())
 
     return twitter
 
@@ -89,7 +89,10 @@ def get_twitter():
 def send_tweet(tweet_text):
     if settings.production:
         try:
-            twitter_sending = Twython(settings.app_key, settings.app_secret, settings.tubelifts_oauth_token, settings.tubelifts_oauth_token_secret)
+            twitter_sending = Twython(
+                settings.app_key, settings.app_secret,
+                settings.tubelifts_oauth_token, settings.tubelifts_oauth_token_secret
+            )
 
             twitter_sending.update_status(status=tweet_text)
         # Except everything. TODO: Look into some of twitters annoying foibles

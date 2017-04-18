@@ -1,11 +1,6 @@
-# import requests
-
-# import HTMLParser
 import jsondate as json
 import pytz
-import re
 
-from copy import deepcopy
 from pytz import timezone
 from datetime import datetime, timedelta
 
@@ -13,8 +8,6 @@ from twython import Twython
 from twython.exceptions import TwythonAuthError
 
 from mako.template import Template
-
-# from bs4 import BeautifulSoup
 
 from updown import sources as scs
 from sources import tflapi, trackernet
@@ -153,20 +146,6 @@ def save_problems_dict():
         f.write(json.dumps(get_problems_dict()))
 
     return True
-
-
-# # Getter and Setter for problems at a station
-# def get_problem_for_station(problems, station):
-
-#     # problems = get_problems_dict()
-
-#     if problems.get(station, None) is not None:
-#         # Then we already have a problem at this station
-#         return problems[station]
-
-#     else:
-#         # Send a blank problem
-#         return BLANK_PROBLEM
 
 
 def set_problem_for_station(station, problem):
