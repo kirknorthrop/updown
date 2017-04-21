@@ -1,43 +1,6 @@
-.bakerloo {background-color: #AE6118; color: #FFFFFF;}
-.central {background-color: #E41F1F; color: #FFFFFF;}
-.circle {background-color: #F8D42D; color: #113892;}
-.district {background-color: #007229; color: #FFFFFF;}
-.hammersmith-city {background-color: #E899A8; color: #113892;}
-.jubilee {background-color: #686E72; color: #FFFFFF;}
-.metropolitan {background-color: #893267; color: #FFFFFF;}
-.northern {background-color: #000000; color: #FFFFFF;}
-.piccadilly {background-color: #0450A1; color: #FFFFFF;}
-.victoria {background-color: #009FE0; color: #FFFFFF;}
-.waterloo-city {background-color: #70C3CE; color: #113892;}
-
-
-.color-bakerloo, .color-bakerloo:before, .color-bakerloo:after {color: #AE6118;}
-.color-central, .color-central:before, .color-central:after {color: #E41F1F;}
-.color-circle, .color-circle:before, .color-circle:after {color: #F8D42D;}
-.color-district, .color-district:before, .color-district:after {color: #007229;}
-.color-hammersmith-city, .color-hammersmith-city:before, .color-hammersmith-city:after {color: #E899A8;}
-.color-jubilee, .color-jubilee:before, .color-jubilee:after {color: #686E72;}
-.color-metropolitan, .color-metropolitan:before, .color-metropolitan:after {color: #893267;}
-.color-northern, .color-northern:before, .color-northern:after {color: #000000;}
-.color-piccadilly, .color-piccadilly:before, .color-piccadilly:after {color: #0450A1;}
-.color-victoria, .color-victoria:before, .color-victoria:after {color: #009FE0;}
-.color-waterloo-city, .color-waterloo-city:before, .color-waterloo-city:after {color: #70C3CE;}
-
 a {
 	color: #0450A1;
 	font-weight: 900;
-}
-a:after {
-	content: " \f061";
-	font-family: FontAwesome;
-	font-weight: normal;
-	font-style: normal;
-	text-decoration: inherit;
-	-webkit-font-smoothing: antialiased;
-}
-
-a.no-arrow:after {
-	content: "";
 }
 
 a.no-bold {
@@ -46,7 +9,7 @@ a.no-bold {
 
 .header-box {
 	margin-bottom: 1em;
-	margin-top: 1em; 
+	margin-top: 1em;
 	text-align: center;
 }
 
