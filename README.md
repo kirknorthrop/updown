@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ### Included modules
 
-#### FitText.js 1.1
+**FitText.js 1.1**
 
 Applies to `static/jquery.fittext.js`
 
