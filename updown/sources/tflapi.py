@@ -10,7 +10,7 @@ EXPLICIT_RESOLVE = False
 
 def check():
 
-    StatusPageURI = 'https://api.tfl.gov.uk/StopPoint/Mode/tube,cable-car,bus,dlr,national-rail,overground,river-bus,tflrail,tram/Disruption?includeRouteBlockedStops=True&app_id=%s&app_key=%s' % (settings.tfl_api_id, settings.tfl_api_key)
+    StatusPageURI = 'https://api.tfl.gov.uk/StopPoint/Mode/tube,cable-car,bus,dlr,national-rail,overground,river-bus,tflrail,tram/Disruption?includeRouteBlockedStops=True&app_id=%s&app_key=%s' % (settings.TFL_API_ID, settings.TFL_API_KEY)
 
     problems = {}
 

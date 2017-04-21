@@ -1,25 +1,21 @@
-import jsondate as json
-import pytz
-
-from pytz import timezone
 from datetime import datetime, timedelta
 
+import jsondate as json
+
+from mako.template import Template
+from pytz import timezone
 from twython import Twython
 from twython.exceptions import TwythonAuthError
 
-from mako.template import Template
-
-from updown import sources as scs
-from sources import tflapi, trackernet
 import settings
 import utils
 
-# Some "constants" and globals
-APP_KEY = settings.app_key
-APP_SECRET = settings.app_secret
+from sources import tflapi, trackernet
+from updown import sources as scs
 
+
+# Some "constants" and globals
 access_token = None
-twitter_last_statuses = None
 station_list = None
 problems_dict = None
 twitter = None
@@ -32,10 +28,10 @@ DEFAULT_EXCUSE = 'There are step free access issues at this station.'
 # Getter and Creator for twitter Access Token
 def create_twitter_access_token():
 
-    twitter = Twython(APP_KEY, APP_SECRET, oauth_version=2)
+    twitter = Twython(settings.TWITTER_KEY, settings.TWITTER_SECRET, oauth_version=2)
     token = twitter.obtain_access_token()
 
-    with open(settings.template_file_location + 'twitter_access_token', 'w') as f:
+    with open(settings.TEMPLATE_FILE_LOCATION + 'twitter_access_token', 'w') as f:
         f.write(token)
 
     return token
@@ -47,7 +43,7 @@ def get_twitter_access_token():
 
     if access_token is None:
         try:
-            with open(settings.template_file_location + 'twitter_access_token', 'r') as f:
+            with open(settings.TEMPLATE_FILE_LOCATION + 'twitter_access_token', 'r') as f:
                 access_token = f.read()
         except IOError:
             access_token = create_twitter_access_token()
@@ -65,7 +61,7 @@ def create_problems_dict():
         # '_tflwebsite_update': '2000-01-01T00:00:00.000000'
     }
 
-    with open(settings.template_file_location + 'problems.json', 'w') as f:
+    with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'w') as f:
         f.write(json.dumps(blank_problems_dict))
 
     return blank_problems_dict
@@ -77,7 +73,7 @@ def get_problems_dict():
 
     if problems_dict is None:
         try:
-            with open(settings.template_file_location + 'problems.json', 'r') as f:
+            with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'r') as f:
                 problems_dict = json.loads(f.read())
                 if '_last_updated' in problems_dict:
                     del problems_dict['_last_updated']
@@ -102,7 +98,7 @@ def set_problems_dict(problems):
 
 def save_problems_dict():
 
-    with open(settings.template_file_location + 'problems.json', 'w') as f:
+    with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'w') as f:
         f.write(json.dumps(get_problems_dict()))
 
     return True
@@ -118,11 +114,15 @@ def set_problem_for_station(station, problem):
 
     return True
 
+
 # Send a tweet
 def send_tweet(tweet_text):
-    if settings.production:
+    if settings.PRODUCTION:
         try:
-            twitter_sending = Twython(settings.app_key, settings.app_secret, settings.tubelifts_oauth_token, settings.tubelifts_oauth_token_secret)
+            twitter_sending = Twython(
+                settings.settings.TWITTER_KEY, settings.TWITTER_SECRET,
+                settings.TUBELIFTS_OAUTH_TOKEN, settings.TUBELIFTS_OAUTH_TOKEN_SECRET
+            )
 
             twitter_sending.update_status(status=tweet_text)
         # Except everything. TODO: Look into some of twitters annoying foibles
@@ -201,15 +201,16 @@ def publish_alexa_file(problems_dict):
     problems = utils.get_problem_stations(problems_dict)
 
     if len(problems) == 0:
-        tweet_string = "There are currently no reported step free access issues on the Transport for London network."
+        tweet_string = 'There are currently no reported step free access issues on the \
+            Transport for London network.'
     else:
-        tweet_string = "There are step free access issues at: "
+        tweet_string = 'There are step free access issues at: '
         tweet_string += ', '.join(problems[0:-1])
         if len(problems) > 1:
             tweet_string += ' and '
         tweet_string += problems[-1]
 
-    with open(settings.output_file_location + 'problems.txt', 'w') as f:
+    with open(settings.OUTPUT_FILE_LOCATION + 'problems.txt', 'w') as f:
         f.write(tweet_string)
 
 
@@ -324,7 +325,6 @@ def blah():
 
     for problem in problems_dict.keys():
         if problem and problem[0:1] != '_':
-            # print problem, problems_dict[problem], type(problems_dict[problem]['time']), problems_dict[problem]['time']
             problems_dict[problem]['time'] = problems_dict[problem]['time'].strftime('%H:%M %d %b')
             if problems_dict[problem]['resolved']:
                 problems_dict[problem]['resolved'] = problems_dict[problem]['resolved'].strftime('%H:%M %d %b')
@@ -344,8 +344,17 @@ def blah():
                 problems[problem] = problems_dict[problem]
 
     # Then create the HTML file.
-    mytemplate = Template(filename=settings.template_file_location + 'index.tmpl')
-    rendered_page = mytemplate.render(problems=problems, problems_sort=sorted(problems), resolved=resolved, resolved_sort=sorted(resolved), information=information, information_sort=sorted(information), last_updated=get_problems_dict()['_last_updated'].strftime('%H:%M %d %b'), production=settings.production)
+    mytemplate = Template(filename=settings.TEMPLATE_FILE_LOCATION + 'index.tmpl')
+    rendered_page = mytemplate.render(
+        problems=problems,
+        problems_sort=sorted(problems),
+        resolved=resolved,
+        resolved_sort=sorted(resolved),
+        information=information,
+        information_sort=sorted(information),
+        last_updated=get_problems_dict()['_last_updated'].strftime('%H:%M %d %b'),
+        production=settings.PRODUCTION
+    )
 
-    with open(settings.output_file_location + 'index.html', 'w') as f:
+    with open(settings.OUTPUT_FILE_LOCATION + 'index.html', 'w') as f:
         f.write(rendered_page)

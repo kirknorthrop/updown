@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import jsondate as json
 
 from twython import Twython
@@ -7,9 +9,6 @@ import settings
 import utils
 
 # Some "constants" and globals
-APP_KEY = settings.app_key
-APP_SECRET = settings.app_secret
-
 access_token = None
 problems_dict = None
 twitter = None
@@ -18,10 +17,10 @@ twitter = None
 # Getter and Creator for twitter Access Token
 def create_twitter_access_token():
 
-    twitter = Twython(APP_KEY, APP_SECRET, oauth_version=2)
+    twitter = Twython(settings.TWITTER_KEY, settings.TWITTER_SECRETs, oauth_version=2)
     token = twitter.obtain_access_token()
 
-    with open(settings.template_file_location + 'twitter_access_token', 'w') as f:
+    with open(settings.TEMPLATE_FILE_LOCATION + 'twitter_access_token', 'w') as f:
         f.write(token)
 
     return token
@@ -33,7 +32,7 @@ def get_twitter_access_token():
 
     if access_token is None:
         try:
-            with open(settings.template_file_location + 'twitter_access_token', 'r') as f:
+            with open(settings.TEMPLATE_FILE_LOCATION + 'twitter_access_token', 'r') as f:
                 access_token = f.read()
         except IOError:
             access_token = create_twitter_access_token()
@@ -50,7 +49,7 @@ def create_problems_dict():
         '_trackernet_update': '2000-01-01T00:00:00.000000'
     }
 
-    with open(settings.template_file_location + 'problems.json', 'w') as f:
+    with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'w') as f:
         f.write(json.dumps(blank_problems_dict))
 
     return blank_problems_dict
@@ -62,7 +61,7 @@ def get_problems_dict():
 
     if problems_dict is None:
         try:
-            with open(settings.template_file_location + 'problems.json', 'r') as f:
+            with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'r') as f:
                 problems_dict = json.loads(f.read())
         except IOError:
             problems_dict = create_problems_dict()
@@ -77,21 +76,21 @@ def get_twitter():
 
     if twitter is None:
         try:
-            twitter = Twython(APP_KEY, access_token=get_twitter_access_token())
+            twitter = Twython(settings.TWITTER_KEY, access_token=get_twitter_access_token())
             twitter.get_user_timeline(screen_name='TFLOfficial')
         except TwythonAuthError:
-            twitter = Twython(APP_KEY, access_token=create_twitter_access_token())
+            twitter = Twython(settings.TWITTER_KEY, access_token=create_twitter_access_token())
 
     return twitter
 
 
 # Send a tweet
 def send_tweet(tweet_text):
-    if settings.production:
+    if settings.PRODUCTION:
         try:
             twitter_sending = Twython(
-                settings.app_key, settings.app_secret,
-                settings.tubelifts_oauth_token, settings.tubelifts_oauth_token_secret
+                settings.settings.TWITTER_KEY, settings.settings.TWITTER_SECRETs,
+                settings.TUBELIFTS_OAUTH_TOKEN, settings.TUBELIFTS_OAUTH_TOKEN_SECRET
             )
 
             twitter_sending.update_status(status=tweet_text)

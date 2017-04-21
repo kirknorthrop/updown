@@ -39,7 +39,7 @@ def get_twitter_last_statuses():
 
     if twitter_last_statuses is None:
         try:
-            with open(settings.template_file_location + 'twitter_laststatuses.json', 'r') as f:
+            with open(settings.TEMPLATE_FILE_LOCATION + 'twitter_laststatuses.json', 'r') as f:
                 twitter_last_statuses = json.loads(f.read())
         except IOError:
             twitter_last_statuses = {
@@ -64,7 +64,7 @@ def get_twitter_last_statuses():
 def set_twitter_last_statuses(last_statuses):
 
     twitter_last_statuses = last_statuses
-    with open(settings.template_file_location + 'twitter_laststatuses.json', 'w') as f:
+    with open(settings.TEMPLATE_FILE_LOCATION + 'twitter_laststatuses.json', 'w') as f:
         f.write(json.dumps(last_statuses))
 
     return True
