@@ -2,13 +2,18 @@
 
 ## Licenses
 
-All graphics files, faq, press and privacy directories
+### Up Down London assets
+
+Applies to all PNG and ICO graphics files, and all contents of the `faq`, `press` and `privacy` directories.
+
 Copyright (C) 2013-2017 Kirk Northrop and Christiane Link. All rights reserved.
 
-These files must not be re-used without express written permission from Up Down London, who are contactable via updownlondon.com.
+These files must not be re-used without express written permission from Up Down London, who are contactable via <https://www.updownlondon.com/>.
 
+### Up Down codebase (excluding graphics, faq, press and privacy directories and modules listed below)
 
-Up Down London (excluding graphics, faq, press and privacy directories and modules listed below)
+Applies to all Up Down project files that are not included modules or part of the Up Down London assets license.
+
 Copyright (C) 2013-2017 Kirk Northrop
 
 This program is free software: you can redistribute it and/or modify
@@ -24,8 +29,12 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+### Included modules
 
-FitText.js 1.1 (static/jquery.fittext.js)
-Copyright 2011, Dave Rupert http://daverupert.com
-Released under the WTFPL license
-http://sam.zoy.org/wtfpl/
+#### FitText.js 1.1
+
+Applies to `static/jquery.fittext.js`
+
+Copyright 2011, Dave Rupert <http://daverupert.com>
+
+Released under the WTFPL license <http://sam.zoy.org/wtfpl/>
