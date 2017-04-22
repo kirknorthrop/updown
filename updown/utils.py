@@ -57,6 +57,14 @@ def remove_tfl_specifics(text):
     return text
 
 
+def fix_additional_info_grammar(text):
+    # It appears that full stops and spaces aren't always used...
+    text = re.sub(r'\.([A-Z<])', r'. \1', text)
+    text = re.sub(r'[^ \.](Please allow extra time for your journey.)', r'. \1', text)
+
+    return text
+
+
 def parse_date(text):
     possible_formats = [
         'D MMMM YYYY', 'D MMMM', 'MMMM YYYY', 'MMMM'

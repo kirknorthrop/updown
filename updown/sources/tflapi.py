@@ -3,7 +3,7 @@ import requests
 from datetime import datetime
 
 from updown import settings
-from updown.utils import find_station_name, find_dates
+from updown.utils import find_station_name, find_dates, fix_additional_info_grammar
 
 EXPLICIT_RESOLVE = False
 
@@ -33,7 +33,8 @@ def check():
                         status_details = status_details.replace('No Step Free Access - ', '')
 
                         if issue.get('additionalInformation'):
-                            status_details += '<p><i>%s</i></p>' % issue['additionalInformation']
+                            additional_info = fix_additional_info_grammar(issue['additionalInformation'])
+                            status_details += '<p><i>%s</i></p>' % additional_info
 
                         problems[station_name] = {
                             'text': status_details,
