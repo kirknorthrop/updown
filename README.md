@@ -10,7 +10,7 @@ Copyright (C) 2013-2017 Kirk Northrop and Christiane Link. All rights reserved.
 
 These files must not be re-used without express written permission from Up Down London, who are contactable via <https://www.updownlondon.com/>.
 
-### Up Down codebase (excluding graphics, faq, press and privacy directories and modules listed below)
+### Up Down codebase
 
 Applies to all Up Down project files that are not included modules or part of the Up Down London assets license.
 

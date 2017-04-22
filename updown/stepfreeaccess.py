@@ -264,7 +264,7 @@ def check_for_resolved(problems_dict, source_id, source):
     if not getattr(scs, source_id).EXPLICIT_RESOLVE:
         missing_for_source = [x for x in problems_dict.keys() if x not in source.keys()]
         for station in missing_for_source:
-            if problems_dict[station].get(source_id):
+            if problems_dict[station].get(source_id) and problems_dict[station][source_id].get('resolved') is None:
                 problems_dict[station][source_id]['resolved'] = datetime.now()
 
 

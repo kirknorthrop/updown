@@ -17,7 +17,7 @@ twitter = None
 # Getter and Creator for twitter Access Token
 def create_twitter_access_token():
 
-    twitter = Twython(settings.TWITTER_KEY, settings.TWITTER_SECRETs, oauth_version=2)
+    twitter = Twython(settings.TWITTER_KEY, settings.TWITTER_SECRET, oauth_version=2)
     token = twitter.obtain_access_token()
 
     with open(settings.TEMPLATE_FILE_LOCATION + 'twitter_access_token', 'w') as f:
@@ -89,7 +89,7 @@ def send_tweet(tweet_text):
     if settings.PRODUCTION:
         try:
             twitter_sending = Twython(
-                settings.settings.TWITTER_KEY, settings.settings.TWITTER_SECRETs,
+                settings.settings.TWITTER_KEY, settings.settings.TWITTER_SECRET,
                 settings.TUBELIFTS_OAUTH_TOKEN, settings.TUBELIFTS_OAUTH_TOKEN_SECRET
             )
 
