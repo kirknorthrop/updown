@@ -32,6 +32,9 @@ def check():
                         status_details = issue['description'][first_colon + 1:].strip()
                         status_details = status_details.replace('No Step Free Access - ', '')
 
+                        if issue.get('additionalInformation'):
+                            status_details += '<p><i>%s</i></p>' % issue['additionalInformation']
+
                         problems[station_name] = {
                             'text': status_details,
                             'time': datetime.now(),
@@ -45,9 +48,9 @@ def check():
                             start_date, end_date = find_dates(status_details)
                             problems[station_name]['work_start'] = start_date
                             problems[station_name]['work_end'] = end_date
-
-                            if (start_date and start_date < datetime.now()) or (end_date and end_date > datetime.now()):
-                                problems[station_name]['information'] = False
+                            if ' changes ' not in status_details:
+                                if (start_date and start_date < datetime.now()) or (end_date and end_date > datetime.now()):
+                                    problems[station_name]['information'] = False
 
                     except ValueError:
                         pass

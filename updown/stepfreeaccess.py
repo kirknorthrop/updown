@@ -223,11 +223,12 @@ def get_preferred_data(problem):
     work_end = problem.get('work_end', None)
 
     resolutions = []
+    new_text = None
 
     for source in SOURCE_RELIABILITY_ORDER:
         if problem.get(source):
-            if not text:
-                text = problem[source]['text']
+            if not new_text:
+                new_text = problem[source]['text']
 
             if (time is None and problem[source]['time']) or \
                     (problem[source]['time'] and problem[source]['time'] < time):
@@ -253,6 +254,9 @@ def get_preferred_data(problem):
         resolved = sorted(resolutions)[-1]
     else:
         resolved = None
+
+    if not resolved:
+        text = new_text
 
     return text, time, resolved, information, work_start, work_end
 
@@ -334,10 +338,10 @@ def blah():
                 minutes = str((problems_dict[problem]['time-to-resolve'] / 60) % 60)
                 problems_dict[problem]['time-to-resolve'] = hours + ":" + minutes
 
-            if (problems_dict[problem]['work_start'] and problems_dict[problem]['work_start'] < datetime.now()) or (problems_dict[problem]['work_end'] and problems_dict[problem]['work_end'] > datetime.now()):
-                problems[problem] = problems_dict[problem]
-            elif problems_dict[problem]['information']:
+            if problems_dict[problem]['information']:
                 information[problem] = problems_dict[problem]
+            elif (problems_dict[problem]['work_start'] and problems_dict[problem]['work_start'] < datetime.now()) or (problems_dict[problem]['work_end'] and problems_dict[problem]['work_end'] > datetime.now()):
+                problems[problem] = problems_dict[problem]
             elif problems_dict[problem]['resolved']:
                 resolved[problem] = problems_dict[problem]
             else:
