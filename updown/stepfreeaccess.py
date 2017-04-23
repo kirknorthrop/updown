@@ -1,107 +1,24 @@
 from datetime import datetime, timedelta
 
-import jsondate as json
-
-from mako.template import Template
-from pytz import timezone
-from twython import Twython
-from twython.exceptions import TwythonAuthError
-
-import settings
-import utils
+from utils import (
+    get_problems_dict,
+    remove_tfl_specifics,
+    send_tweet,
+    set_problems_dict,
+)
 
 from sources import tflapi, trackernet
 from updown import sources as scs
+from outputs import website, alexa
 
 
 # Some "constants" and globals
-access_token = None
 station_list = None
-problems_dict = None
 twitter = None
 
-SOURCE_RELIABILITY_ORDER = ['trackernet', 'tflapi', 'twitter']
+SOURCE_RELIABILITY_ORDER = ['trackernet', 'tflapi']
 
 DEFAULT_EXCUSE = 'There are step free access issues at this station.'
-
-
-# Getter and Creator for twitter Access Token
-def create_twitter_access_token():
-
-    twitter = Twython(settings.TWITTER_KEY, settings.TWITTER_SECRET, oauth_version=2)
-    token = twitter.obtain_access_token()
-
-    with open(settings.TEMPLATE_FILE_LOCATION + 'twitter_access_token', 'w') as f:
-        f.write(token)
-
-    return token
-
-
-def get_twitter_access_token():
-
-    global access_token
-
-    if access_token is None:
-        try:
-            with open(settings.TEMPLATE_FILE_LOCATION + 'twitter_access_token', 'r') as f:
-                access_token = f.read()
-        except IOError:
-            access_token = create_twitter_access_token()
-
-    return access_token
-
-
-# Getter, Setter and Creator and Saver for Problems file
-def create_problems_dict():
-
-    blank_problems_dict = {
-        # '_last_updated': datetime.now().isoformat(),
-        # '_twitter_update': '2000-01-01T00:00:00.000000',
-        # '_trackernet_update': '2000-01-01T00:00:00.000000',
-        # '_tflwebsite_update': '2000-01-01T00:00:00.000000'
-    }
-
-    with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'w') as f:
-        f.write(json.dumps(blank_problems_dict))
-
-    return blank_problems_dict
-
-
-def get_problems_dict():
-
-    global problems_dict
-
-    if problems_dict is None:
-        try:
-            with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'r') as f:
-                problems_dict = json.loads(f.read())
-                if '_last_updated' in problems_dict:
-                    del problems_dict['_last_updated']
-        except IOError:
-            problems_dict = create_problems_dict()
-
-    return problems_dict
-
-
-def set_problems_dict(problems):
-
-    global problems_dict
-
-    problems['_last_updated'] = datetime.now()
-
-    problems_dict = problems
-
-    save_problems_dict()
-
-    return True
-
-
-def save_problems_dict():
-
-    with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'w') as f:
-        f.write(json.dumps(get_problems_dict()))
-
-    return True
 
 
 def set_problem_for_station(station, problem):
@@ -113,23 +30,6 @@ def set_problem_for_station(station, problem):
     set_problems_dict(problems)
 
     return True
-
-
-# Send a tweet
-def send_tweet(tweet_text):
-    if settings.PRODUCTION:
-        try:
-            twitter_sending = Twython(
-                settings.settings.TWITTER_KEY, settings.TWITTER_SECRET,
-                settings.TUBELIFTS_OAUTH_TOKEN, settings.TUBELIFTS_OAUTH_TOKEN_SECRET
-            )
-
-            twitter_sending.update_status(status=tweet_text)
-        # Except everything. TODO: Look into some of twitters annoying foibles
-        except:
-            pass
-    else:
-        print "Should have tweeted: " + tweet_text
 
 
 # Update the problems, delete old ones etc
@@ -176,42 +76,11 @@ def update_problems():
                 tweet = 'Step free access has been restored at ' + problem
                 send_tweet(tweet)
 
-                # # If is was something that was only put on twitter and never resolved - time out after 6 hours
-                # elif problems[problem]['twitter']['time'] and problems[problem]['trackernet']['time'] is None and problems[problem]['trackernet']['resolved'] is None and problems[problem]['twitter']['resolved'] is None:
-                #     twitter_time = datetime.strptime(problems[problem]['twitter']['time'][0:19], '%Y-%m-%dT%H:%M:%S')
-
-                #     if twitter_time + timedelta(hours=6) < datetime.now():
-                #         problems[problem]['trackernet']['resolved'] = datetime.now().isoformat()
-                #         problems[problem]['trackernet']['text'] = "This issue was mentioned on Twitter but never resolved. Therefore we have marked it as resolved after 6 hours."
-                #         problems[problem]['resolved'] = True
-
-                #         # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
-                #         tweet = 'There is no further news on step free access at ' + problem
-                #         send_tweet(tweet)
-
     for problem in list(set(problems_to_remove)):
         if problem in problems:
             del(problems[problem])
 
     set_problems_dict(problems)
-
-
-def publish_alexa_file(problems_dict):
-
-    problems = utils.get_problem_stations(problems_dict)
-
-    if len(problems) == 0:
-        tweet_string = 'There are currently no reported step free access issues on the \
-            Transport for London network.'
-    else:
-        tweet_string = 'There are step free access issues at: '
-        tweet_string += ', '.join(problems[0:-1])
-        if len(problems) > 1:
-            tweet_string += ' and '
-        tweet_string += problems[-1]
-
-    with open(settings.OUTPUT_FILE_LOCATION + 'problems.txt', 'w') as f:
-        f.write(tweet_string)
 
 
 def get_preferred_data(problem):
@@ -284,6 +153,8 @@ def update_problems_from_source(source_id, source, problems):
         problems[station][source_id] = problem
 
 
+
+
 def blah():
 
     problems_dict = get_problems_dict()
@@ -304,7 +175,7 @@ def blah():
     for station, problem in problems_dict.items():
         text, time, resolved, information, work_start, work_end = get_preferred_data(problem)
 
-        problem['text'] = utils.remove_tfl_specifics(text)
+        problem['text'] = remove_tfl_specifics(text)
         problem['time'] = time
         problem['resolved'] = resolved
         problem['information'] = information
@@ -315,12 +186,6 @@ def blah():
     update_problems()
 
     set_problems_dict(problems_dict)
-
-    # save_problems_dict()
-
-    # # Publish service JSONs
-    # # # #publish_android_json(get_problems_dict())
-    publish_alexa_file(problems_dict)
 
     # Then split them into two dicts
     problems = {}
@@ -347,18 +212,7 @@ def blah():
             else:
                 problems[problem] = problems_dict[problem]
 
-    # Then create the HTML file.
-    mytemplate = Template(filename=settings.TEMPLATE_FILE_LOCATION + 'index.tmpl')
-    rendered_page = mytemplate.render(
-        problems=problems,
-        problems_sort=sorted(problems),
-        resolved=resolved,
-        resolved_sort=sorted(resolved),
-        information=information,
-        information_sort=sorted(information),
-        last_updated=get_problems_dict()['_last_updated'].strftime('%H:%M %d %b'),
-        production=settings.PRODUCTION
-    )
+    last_updated = datetime.now() #get_problems_dict()['_last_updated']
 
-    with open(settings.OUTPUT_FILE_LOCATION + 'index.html', 'w') as f:
-        f.write(rendered_page)
+    alexa.generate(problems, resolved, information, last_updated)
+    website.generate(problems, resolved, information, last_updated)

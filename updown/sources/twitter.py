@@ -1,8 +1,54 @@
+import settings
+from twython import Twython
+
 EXPLICIT_RESOLVE = True
+
+from twython.exceptions import TwythonAuthError
+import os
 
 ###########################################
 # Lots of currently unused Twitter stuff. #
 ###########################################
+
+def get_twitter_access_token(regenerate=False):
+
+    TOKEN_FILE_LOCATION = settings.TEMPLATE_FILE_LOCATION + 'twitter_access_token'
+
+    if not regenerate and os.path.isfile(TOKEN_FILE_LOCATION):
+        with open(TOKEN_FILE_LOCATION, 'r') as f:
+            token = f.read()
+    else:
+        twitter = Twython(settings.TWITTER_KEY, settings.TWITTER_SECRET, oauth_version=2)
+        token = twitter.obtain_access_token()
+
+        with open(TOKEN_FILE_LOCATION, 'w') as f:
+            f.write(token)
+
+    return token
+
+
+def get_twitter():
+
+    try:
+        twitter = Twython(settings.TWITTER_KEY, access_token=get_twitter_access_token())
+        twitter.get_user_timeline(screen_name='TfL')
+    except TwythonAuthError:
+        twitter = Twython(settings.TWITTER_KEY, access_token=get_twitter_access_token(True))
+
+    return twitter
+
+# # If is was something that was only put on twitter and never resolved - time out after 6 hours
+# elif problems[problem]['twitter']['time'] and problems[problem]['trackernet']['time'] is None and problems[problem]['trackernet']['resolved'] is None and problems[problem]['twitter']['resolved'] is None:
+#     twitter_time = datetime.strptime(problems[problem]['twitter']['time'][0:19], '%Y-%m-%dT%H:%M:%S')
+
+#     if twitter_time + timedelta(hours=6) < datetime.now():
+#         problems[problem]['trackernet']['resolved'] = datetime.now().isoformat()
+#         problems[problem]['trackernet']['text'] = "This issue was mentioned on Twitter but never resolved. Therefore we have marked it as resolved after 6 hours."
+#         problems[problem]['resolved'] = True
+
+#         # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
+#         tweet = 'There is no further news on step free access at ' + problem
+#         send_tweet(tweet)
 
 
 # Get a twitter object

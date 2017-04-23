@@ -1,10 +1,15 @@
 import re
 
+from datetime import datetime
+
 import arrow
 import requests
 
 from bs4 import BeautifulSoup
+import jsondate as json
+from twython import Twython
 
+import settings
 
 TFL_NAME_CORRECTIONS = {
     'King\'s Cross': 'King\'s Cross St. Pancras',
@@ -35,7 +40,6 @@ def get_station_list():
 def find_station_name(possible_name):
 
     # Correlate a name from a tweet/trackernet with one we expect to find
-
     for station_name in get_station_list():
         if station_name.lower() in possible_name.lower():
             return station_name
@@ -116,3 +120,44 @@ def get_problem_stations(problems_dict):
                 problems.append(problem)
 
     return sorted(problems)
+
+
+def send_tweet(tweet_text):
+    """ Send a tweet """
+    if settings.PRODUCTION:
+        try:
+            twitter = Twython(
+                settings.settings.TWITTER_KEY, settings.settings.TWITTER_SECRET,
+                settings.TUBELIFTS_OAUTH_TOKEN, settings.TUBELIFTS_OAUTH_TOKEN_SECRET
+            )
+
+            twitter.update_status(status=tweet_text)
+        # Except everything. TODO: Look into some of twitters annoying foibles
+        except:
+            pass
+    else:
+        print "Should have tweeted: " + tweet_text
+
+
+def get_problems_dict():
+    try:
+        with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'r') as f:
+            problems_dict = json.loads(f.read())
+            if '_last_updated' in problems_dict:
+                del problems_dict['_last_updated']
+    except IOError:
+        with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'w') as f:
+            problems_dict = {}
+            f.write(json.dumps(problems_dict))
+
+    return problems_dict
+
+
+def set_problems_dict(problems):
+
+    problems['_last_updated'] = datetime.now()
+
+    with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'w') as f:
+        f.write(json.dumps(problems))
+
+    return True
