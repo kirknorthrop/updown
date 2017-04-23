@@ -127,7 +127,7 @@ def send_tweet(tweet_text):
     if settings.PRODUCTION:
         try:
             twitter = Twython(
-                settings.settings.TWITTER_KEY, settings.settings.TWITTER_SECRET,
+                settings.TWITTER_KEY, settings.TWITTER_SECRET,
                 settings.TUBELIFTS_OAUTH_TOKEN, settings.TUBELIFTS_OAUTH_TOKEN_SECRET
             )
 
