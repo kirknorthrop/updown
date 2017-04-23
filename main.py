@@ -1,3 +1,3 @@
 from updown import stepfreeaccess
 
-stepfreeaccess.blah()
+stepfreeaccess.update_site()

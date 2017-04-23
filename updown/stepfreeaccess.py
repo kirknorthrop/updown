@@ -153,9 +153,7 @@ def update_problems_from_source(source_id, source, problems):
         problems[station][source_id] = problem
 
 
-
-
-def blah():
+def update_site():
 
     problems_dict = get_problems_dict()
 
