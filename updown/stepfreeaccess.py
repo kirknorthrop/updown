@@ -33,9 +33,7 @@ def set_problem_for_station(station, problem):
 
 
 # Update the problems, delete old ones etc
-def update_problems():
-    problems = get_problems_dict()
-
+def update_problems(problems):
     problems_to_remove = []
 
     for problem in problems.keys():
@@ -66,15 +64,16 @@ def update_problems():
                     problems_to_remove.append(problem)
                     break
 
-                # Work out how long it took them to resolve
-                start_time = problems[problem]['time']
-                end_time = problems[problem]['resolved']
+                if problems[problem]['resolved'] > datetime.now() - timedelta(minutes=1):
+                    # Work out how long it took them to resolve
+                    start_time = problems[problem]['time']
+                    end_time = problems[problem]['resolved']
 
-                problems[problem]['time-to-resolve'] = int((end_time - start_time).seconds)
+                    problems[problem]['time-to-resolve'] = int((end_time - start_time).seconds)
 
-                # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
-                tweet = 'Step free access has been restored at ' + problem
-                send_tweet(tweet)
+                    # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
+                    tweet = 'Step free access has been restored at ' + problem
+                    send_tweet(tweet)
 
     for problem in list(set(problems_to_remove)):
         if problem in problems:
@@ -181,7 +180,7 @@ def update_site():
         problem['work_end'] = work_end
 
     # Then we need to see what's been resolved and tweet about it
-    update_problems()
+    update_problems(problems_dict)
 
     set_problems_dict(problems_dict)
 
