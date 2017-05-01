@@ -1,3 +1,5 @@
+import json
+
 from updown import settings, utils
 
 
@@ -15,3 +17,8 @@ def generate(problems, resolved, information, last_updated):
 
     with open(settings.OUTPUT_FILE_LOCATION + 'problems.txt', 'w') as f:
         f.write(alexa_string)
+
+    with open(settings.OUTPUT_FILE_LOCATION + 'problems.json', 'w') as f:
+        alexa_json = {k.lower(): v['text'] for k, v in problems.items() + information.items()}
+
+        f.write(json.dumps(alexa_json))
