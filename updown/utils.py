@@ -50,7 +50,6 @@ def find_station_name(possible_name):
             return TFL_NAME_CORRECTIONS[station_name]
 
     print station_name, 'not found'
-    return possible_name
 
 
 def remove_tfl_specifics(text):
