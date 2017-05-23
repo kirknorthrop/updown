@@ -11,6 +11,8 @@ from sources import tflapi, trackernet
 from updown import sources as scs
 from outputs import website, alexa
 
+import settings, os, json
+
 
 # Some "constants" and globals
 station_list = None
@@ -160,6 +162,9 @@ def update_site():
         'tflapi': tflapi.check(),
         'trackernet': trackernet.check(),
     }
+
+    with open(os.path.join(settings.UPDATE_FILE_DIR, '%s.json' % datetime.now().strftime('%Y-%m-%d-%H-%M')), 'w') as f:
+        f.write(json.dumps(sources, default=str))
 
     for source in sources:
         check_for_resolved(problems_dict, source, sources[source])

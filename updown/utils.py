@@ -1,4 +1,5 @@
 import re
+import os.path
 
 from datetime import datetime
 
@@ -24,15 +25,24 @@ def create_station_list():
 
     r = requests.get(station_status_URI)
     xml = r.text
-    # CHECK RESPONSE CODE 200!
-    soup = BeautifulSoup(xml)
+    if r.status_code == 200:
+        soup = BeautifulSoup(xml)
 
-    return list(reversed(sorted([station['name'] for station in soup.find_all('station')], key=len)))
+        stations = list(reversed(sorted([station['name'] for station in soup.find_all('station')], key=len)))
+
+        with open('stations.json', 'w') as f:
+            f.write(json.dumps(stations))
+
+        return stations
 
 
 def get_station_list():
 
-    station_list = create_station_list()
+    if os.path.isfile('stations.json'):
+        with open('stations.json') as f:
+            station_list = json.loads(f.read())
+    else:
+        station_list = create_station_list()
 
     return station_list
 
@@ -49,7 +59,7 @@ def find_station_name(possible_name):
         if station_name.lower() in possible_name.lower():
             return TFL_NAME_CORRECTIONS[station_name]
 
-    print station_name, 'not found'
+    print possible_name, 'not found'
 
 
 def remove_tfl_specifics(text):
