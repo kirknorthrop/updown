@@ -21,9 +21,8 @@ def check():
             disruption = r.json()
 
             for issue in disruption:
-                if 'step free' in issue['description'].lower() or \
-                        'step-free' in issue['description'].lower() or \
-                        'no lift service' in issue['description'].lower():
+                # All issues should now be caught with this text
+                if 'step free access is not available' in issue['description'].lower():
 
                     try:
                         first_colon = issue['description'].index(':')

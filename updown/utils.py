@@ -1,16 +1,20 @@
+import os
 import re
-import os.path
+import stat
 
 from datetime import datetime
+from time import time
 
 import arrow
+import jsondate as json
 import requests
 
 from bs4 import BeautifulSoup
-import jsondate as json
 from twython import Twython
 
 import settings
+
+A_DAY_IN_SECONDS = 60*60*24
 
 TFL_NAME_CORRECTIONS = {
     'King\'s Cross': 'King\'s Cross St. Pancras',
@@ -18,45 +22,66 @@ TFL_NAME_CORRECTIONS = {
 }
 
 
+def cleanup_station_name(station_name):
+    station_name = station_name.replace('Rail Station', '')
+    station_name = station_name.replace('Underground Station', '')
+    station_name = station_name.replace('Underground Stn', '')
+    station_name = station_name.replace('Overground Station', '')
+    station_name = station_name.replace('DLR Station', '')
+    station_name = station_name.replace('Station', '')
+    station_name = station_name.replace('(London)', '')
+
+    return station_name.strip()
+
+
 # Getter and Creator for Station List
 def create_station_list():
     # TODO: Save this and replace once a day
-    station_status_URI = "http://cloud.tfl.gov.uk/TrackerNet/StationStatus"
 
-    r = requests.get(station_status_URI)
-    xml = r.text
-    if r.status_code == 200:
-        soup = BeautifulSoup(xml)
+    modes = ['tube', 'dlr', 'overground', 'national-rail', 'tflrail']
 
-        stations = list(reversed(sorted([station['name'] for station in soup.find_all('station')], key=len)))
+    station_status_URI = 'https://api.tfl.gov.uk/StopPoint/Mode/%s?app_id=%s&app_key=%s'
+
+    stations = []
+
+    for mode in modes:
+        url = station_status_URI % (mode, settings.TFL_API_ID, settings.TFL_API_KEY)
+
+        r = requests.get(url)
+
+        for station in r.json().get('stopPoints', []):
+            stations.append(cleanup_station_name(station['commonName']))
+
+        stations = list(reversed(sorted(set(stations), key=len)))
 
         with open('stations.json', 'w') as f:
             f.write(json.dumps(stations))
 
-        return stations
+    return stations
 
 
 def get_station_list():
 
     if os.path.isfile('stations.json'):
-        with open('stations.json') as f:
-            station_list = json.loads(f.read())
-    else:
-        station_list = create_station_list()
+        stations_file_time = os.stat('stations.json')[stat.ST_MTIME]
 
-    return station_list
+        if (int(time()) - stations_file_time) < A_DAY_IN_SECONDS:
+            with open('stations.json') as f:
+                return json.loads(f.read())
+
+    return create_station_list()
 
 
 def find_station_name(possible_name):
 
     # Correlate a name from a tweet/trackernet with one we expect to find
     for station_name in get_station_list():
-        if station_name.lower() in possible_name.lower():
+        if station_name.lower() in cleanup_station_name(possible_name).lower():
             return station_name
 
     # If we don't find it in the proper list, we have to look in our corrections list
     for station_name in TFL_NAME_CORRECTIONS.keys():
-        if station_name.lower() in possible_name.lower():
+        if station_name.lower() in cleanup_station_name(possible_name).lower():
             return TFL_NAME_CORRECTIONS[station_name]
 
     print possible_name, 'not found'

@@ -160,7 +160,7 @@ def update_site():
 
     sources = {
         'tflapi': tflapi.check(),
-        'trackernet': trackernet.check(),
+        # 'trackernet': trackernet.check(),
     }
 
     with open(os.path.join(settings.UPDATE_FILE_DIR, '%s.json' % datetime.now().strftime('%Y-%m-%d-%H-%M')), 'w') as f:
