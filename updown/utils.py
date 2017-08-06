@@ -92,6 +92,7 @@ def remove_tfl_specifics(text):
     text = re.sub('(Please )?[Cc]all.*0[38]43 ?222 ?1234.*journey\.?', '', text)
     text = re.sub('we ', 'TfL ', text, re.IGNORECASE)
     text = re.sub('member of staff', 'member of TfL staff', text, re.IGNORECASE)
+    text = re.sub('Call our Travel Information Centre on 0343 222 1234 if you need more help\.?', '', text)
 
     return text
 
