@@ -53,7 +53,7 @@ def update_problems(problems):
                 if not tweet or len(tweet) > 140:
                     if problems[problem]['information']:
                         tweet = 'New information on step free access at ' + problem
-                    else:
+                    elif problem != 'null':
                         tweet = 'Step free access issues reported at ' + problem
 
                 send_tweet(tweet)
@@ -74,7 +74,8 @@ def update_problems(problems):
                     problems[problem]['time-to-resolve'] = int((end_time - start_time).seconds)
 
                     # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
-                    tweet = 'Step free access has been restored at ' + problem
+                    if problem != 'null':
+                        tweet = 'Step free access has been restored at ' + problem
                     send_tweet(tweet)
 
     for problem in list(set(problems_to_remove)):
