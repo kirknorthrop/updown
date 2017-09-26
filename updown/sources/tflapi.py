@@ -1,5 +1,6 @@
 import requests
 
+
 from datetime import datetime
 
 from updown import settings
@@ -22,7 +23,7 @@ def check():
 
             for issue in disruption:
                 # All issues should now be caught with this text
-                if 'step free access is not available' in issue['description'].lower():
+                if 'step free access is not available' in issue['description'].lower() or 'there will be no step-free access' in issue['description'].lower():
 
                     try:
                         first_colon = issue['description'].index(':')
