@@ -14,6 +14,7 @@ def generate(problems, resolved, information, last_updated):
         if len(problems) > 1:
             alexa_string += ' and '
         alexa_string += problems.keys()[-1]
+
     alexa_string = alexa_string.replace('&', 'and')
 
     with open(settings.OUTPUT_FILE_LOCATION + 'problems.txt', 'w') as f:

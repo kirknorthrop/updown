@@ -1,65 +1,110 @@
+import os
 import re
-import os.path
+import stat
 
 from datetime import datetime
+from time import time
 
 import arrow
+import jsondate as json
 import requests
 
 from bs4 import BeautifulSoup
-import jsondate as json
 from twython import Twython
 
 import settings
 
+A_DAY_IN_SECONDS = 60*60*24
+
 TFL_NAME_CORRECTIONS = {
     'King\'s Cross': 'King\'s Cross St. Pancras',
-    'Cutty Sark': 'Cutty Sark for Maritime Greenwich'
+    'Cutty Sark': 'Cutty Sark for Maritime Greenwich',
 }
+
+
+def cleanup_station_name(station_name):
+
+    to_remove = [
+        'Rail Station',
+        'Underground Station',
+        'Underground Stn',
+        'Overground Station',
+        'DLR Station',
+        'Station',
+        '(London)',
+        '(',
+        ')',
+        'Dist&Picc Line',
+        'Circle Line',
+        'Bakerloo Line',
+        'Central Line',
+        'H&C Line-Underground',
+    ]
+
+    for item in to_remove:
+        station_name = station_name.replace(item, '')
+
+    # Kensington (Olympia) is the only station with parentheses in its name on the tube map.
+    if station_name == 'Kensington Olympia':
+        station_name = 'Kensington (Olympia)'
+
+    return station_name.strip()
 
 
 # Getter and Creator for Station List
 def create_station_list():
     # TODO: Save this and replace once a day
-    station_status_URI = "http://cloud.tfl.gov.uk/TrackerNet/StationStatus"
 
-    r = requests.get(station_status_URI)
-    xml = r.text
-    if r.status_code == 200:
-        soup = BeautifulSoup(xml)
+    modes = ['tube', 'dlr', 'overground', 'national-rail', 'tflrail']
 
-        stations = list(reversed(sorted([station['name'] for station in soup.find_all('station')], key=len)))
+    station_status_URI = 'https://api.tfl.gov.uk/StopPoint/Mode/%s?app_id=%s&app_key=%s'
+
+    stations = []
+
+    for mode in modes:
+        url = station_status_URI % (mode, settings.TFL_API_ID, settings.TFL_API_KEY)
+
+        r = requests.get(url)
+
+        for station in r.json().get('stopPoints', []):
+            stations.append(cleanup_station_name(station['commonName']))
+
+        stations = list(reversed(sorted(set(stations), key=len)))
 
         with open('stations.json', 'w') as f:
             f.write(json.dumps(stations))
 
-        return stations
+    return stations
 
 
 def get_station_list():
 
     if os.path.isfile('stations.json'):
-        with open('stations.json') as f:
-            station_list = json.loads(f.read())
-    else:
-        station_list = create_station_list()
+        stations_file_time = os.stat('stations.json')[stat.ST_MTIME]
 
-    return station_list
+        if (int(time()) - stations_file_time) < A_DAY_IN_SECONDS:
+            with open('stations.json') as f:
+                return json.loads(f.read())
+
+    return create_station_list()
 
 
 def find_station_name(possible_name):
 
+    clean_station_name = cleanup_station_name(possible_name).lower()
+
     # Correlate a name from a tweet/trackernet with one we expect to find
     for station_name in get_station_list():
-        if station_name.lower() in possible_name.lower():
+        if station_name.lower() in clean_station_name:
             return station_name
 
     # If we don't find it in the proper list, we have to look in our corrections list
     for station_name in TFL_NAME_CORRECTIONS.keys():
-        if station_name.lower() in possible_name.lower():
+        if station_name.lower() in clean_station_name:
             return TFL_NAME_CORRECTIONS[station_name]
 
     print possible_name, 'not found'
+    return clean_station_name
 
 
 def remove_tfl_specifics(text):
@@ -67,6 +112,10 @@ def remove_tfl_specifics(text):
     text = re.sub('(Please )?[Cc]all.*0[38]43 ?222 ?1234.*journey\.?', '', text)
     text = re.sub('we ', 'TfL ', text, re.IGNORECASE)
     text = re.sub('member of staff', 'member of TfL staff', text, re.IGNORECASE)
+    text = re.sub('Call our Travel Information Centre on 0343 222 1234 if you need more help\.?', '', text, re.IGNORECASE)
+    text = re.sub('Call our Travel Information Centre on 0343 222 1234 for further help\.?', '', text, re.IGNORECASE)
+    text = re.sub('Call us on 0343 222 1234 if you need more help\.?', '', text, re.IGNORECASE)
+    text = re.sub('Call 0343 222 1234 for further help\.?', '', text, re.IGNORECASE)
 
     return text
 
