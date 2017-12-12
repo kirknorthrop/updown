@@ -10,10 +10,11 @@ def generate(problems, resolved, information, last_updated):
             Transport for London network.'
     else:
         alexa_string = 'There are step free access issues at: '
-        alexa_string += ', '.join(problems.keys()[0:-1])
+        alexa_string += ', '.join(sorted(problems.keys()[0:-1]))
         if len(problems) > 1:
             alexa_string += ' and '
         alexa_string += problems.keys()[-1]
+    alexa_string = alexa_string.replace('&', 'and')
 
     with open(settings.OUTPUT_FILE_LOCATION + 'problems.txt', 'w') as f:
         f.write(alexa_string)
