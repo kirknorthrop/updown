@@ -18,18 +18,35 @@ A_DAY_IN_SECONDS = 60*60*24
 
 TFL_NAME_CORRECTIONS = {
     'King\'s Cross': 'King\'s Cross St. Pancras',
-    'Cutty Sark': 'Cutty Sark for Maritime Greenwich'
+    'Cutty Sark': 'Cutty Sark for Maritime Greenwich',
 }
 
 
 def cleanup_station_name(station_name):
-    station_name = station_name.replace('Rail Station', '')
-    station_name = station_name.replace('Underground Station', '')
-    station_name = station_name.replace('Underground Stn', '')
-    station_name = station_name.replace('Overground Station', '')
-    station_name = station_name.replace('DLR Station', '')
-    station_name = station_name.replace('Station', '')
-    station_name = station_name.replace('(London)', '')
+
+    to_remove = [
+        'Rail Station',
+        'Underground Station',
+        'Underground Stn',
+        'Overground Station',
+        'DLR Station',
+        'Station',
+        '(London)',
+        '(',
+        ')',
+        'Dist&Picc Line',
+        'Circle Line',
+        'Bakerloo Line',
+        'Central Line',
+        'H&C Line-Underground',
+    ]
+
+    for item in to_remove:
+        station_name = station_name.replace(item, '')
+
+    # Kensington (Olympia) is the only station with parentheses in its name on the tube map.
+    if station_name == 'Kensington Olympia':
+        station_name = 'Kensington (Olympia)'
 
     return station_name.strip()
 
@@ -74,17 +91,20 @@ def get_station_list():
 
 def find_station_name(possible_name):
 
+    clean_station_name = cleanup_station_name(possible_name).lower()
+
     # Correlate a name from a tweet/trackernet with one we expect to find
     for station_name in get_station_list():
-        if station_name.lower() in cleanup_station_name(possible_name).lower():
+        if station_name.lower() in clean_station_name:
             return station_name
 
     # If we don't find it in the proper list, we have to look in our corrections list
     for station_name in TFL_NAME_CORRECTIONS.keys():
-        if station_name.lower() in cleanup_station_name(possible_name).lower():
+        if station_name.lower() in clean_station_name:
             return TFL_NAME_CORRECTIONS[station_name]
 
     print possible_name, 'not found'
+    return clean_station_name
 
 
 def remove_tfl_specifics(text):
@@ -92,7 +112,10 @@ def remove_tfl_specifics(text):
     text = re.sub('(Please )?[Cc]all.*0[38]43 ?222 ?1234.*journey\.?', '', text)
     text = re.sub('we ', 'TfL ', text, re.IGNORECASE)
     text = re.sub('member of staff', 'member of TfL staff', text, re.IGNORECASE)
-    text = re.sub('Call our Travel Information Centre on 0343 222 1234 if you need more help\.?', '', text)
+    text = re.sub('Call our Travel Information Centre on 0343 222 1234 if you need more help\.?', '', text, re.IGNORECASE)
+    text = re.sub('Call our Travel Information Centre on 0343 222 1234 for further help\.?', '', text, re.IGNORECASE)
+    text = re.sub('Call us on 0343 222 1234 if you need more help\.?', '', text, re.IGNORECASE)
+    text = re.sub('Call 0343 222 1234 for further help\.?', '', text, re.IGNORECASE)
 
     return text
 
