@@ -13,7 +13,7 @@ def generate(problems, resolved, information, last_updated):
         alexa_string += ', '.join(sorted(problems.keys()[0:-1]))
         if len(problems) > 1:
             alexa_string += ' and '
-        alexa_string += problems.keys()[-1]
+        alexa_string += sorted(problems.keys())[-1]
 
     alexa_string = alexa_string.replace('&', 'and')
 
