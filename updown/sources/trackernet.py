@@ -24,6 +24,7 @@ def check():
 
             for station in soup.find_all('stationstatus'):
                 if station.status['id'] == 'NS':
+                    print('**%s**' % station.station['name'])
                     station_name = find_station_name(station.station['name'])
 
                     problems[station_name] = {

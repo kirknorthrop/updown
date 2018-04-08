@@ -12,7 +12,7 @@ import requests
 from bs4 import BeautifulSoup
 from twython import Twython
 
-import settings
+from updown import settings
 
 A_DAY_IN_SECONDS = 60*60*24
 
@@ -103,7 +103,7 @@ def find_station_name(possible_name):
         if station_name.lower() in clean_station_name:
             return TFL_NAME_CORRECTIONS[station_name]
 
-    print possible_name, 'not found'
+    print(possible_name, 'not found')
     return clean_station_name
 
 
@@ -195,7 +195,7 @@ def send_tweet(tweet_text):
         except:
             pass
     else:
-        print "Should have tweeted: " + tweet_text
+        print("Should have tweeted: " + tweet_text)
 
 
 def get_problems_dict():
