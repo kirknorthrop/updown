@@ -18,4 +18,6 @@ def generate(problems, resolved, information, last_updated):
     )
 
     with open(settings.OUTPUT_FILE_LOCATION + 'index.html', 'w') as f:
+        if isinstance(rendered_page, bytes):
+            rendered_page = rendered_page.decode('utf-8')
         f.write(rendered_page)
