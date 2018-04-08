@@ -44,13 +44,13 @@ def update_problems(problems):
             tweet = None
 
             if problems[problem].get('new-problem', False) and problem:
-                # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 106
+                # Longest station name is Cutty Sark for Maritime Greenwich at 34 chars. This leaves 246
                 for source in SOURCE_RELIABILITY_ORDER:
                     if problems[problem].get(source) and problems[problem][source]['text']:
                         tweet = problem + ': ' + problems[problem][source]['text']
                         break
 
-                if not tweet or len(tweet) > 140:
+                if not tweet or len(tweet) > 280:
                     if problems[problem]['information']:
                         tweet = 'New information on step free access at ' + problem
                     elif problem != 'null':
