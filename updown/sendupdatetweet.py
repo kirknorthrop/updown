@@ -35,8 +35,8 @@ if __name__ == '__main__':
         # So see if the tweet is too long
         # Bear in mind we will be adding 'and' between the last two
         # and (1/2) if there is more than one tweet.
-        # So a single tweet can be 135, multiple 130 each.
-        if len(tweet_string + ', '.join(problems)) < 135:
+        # So a single tweet can be 275, multiple 270 each.
+        if len(tweet_string + ', '.join(problems)) < 275:
             tweet_string += ', '.join(problems[0:-1])
             if len(problems) > 1:
                 tweet_string += ' and '
@@ -45,7 +45,7 @@ if __name__ == '__main__':
         else:
             # Too long, split it up!
             for i, station in enumerate(problems):
-                if len(tweet_string + station + ' ') > 130:
+                if len(tweet_string + station + ' ') > 270:
                     if tweet_string[-2:] == ', ':
                         tweet_string = tweet_string[0:-2] + '...'
                     tweets.append(tweet_string)
