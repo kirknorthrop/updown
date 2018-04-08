@@ -10,6 +10,7 @@ import os
 # Lots of currently unused Twitter stuff. #
 ###########################################
 
+
 def get_twitter_access_token(regenerate=False):
 
     TOKEN_FILE_LOCATION = settings.TEMPLATE_FILE_LOCATION + 'twitter_access_token'
@@ -86,7 +87,7 @@ def get_twitter_last_statuses():
     if twitter_last_statuses is None:
         try:
             with open(settings.TEMPLATE_FILE_LOCATION + 'twitter_laststatuses.json', 'r') as f:
-                twitter_last_statuses = json.loads(f.read())
+                twitter_last_statuses = yaml.load(f.read())
         except IOError:
             twitter_last_statuses = {
                 'bakerlooline': 1,
@@ -111,7 +112,7 @@ def set_twitter_last_statuses(last_statuses):
 
     twitter_last_statuses = last_statuses
     with open(settings.TEMPLATE_FILE_LOCATION + 'twitter_laststatuses.json', 'w') as f:
-        f.write(json.dumps(last_statuses))
+        f.write(yaml.dump(last_statuses))
 
     return True
 

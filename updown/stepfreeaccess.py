@@ -167,8 +167,8 @@ def update_site():
         # 'trackernet': trackernet.check(),
     }
 
-    with open(os.path.join(settings.UPDATE_FILE_DIR, '%s.json' % datetime.now().strftime('%Y-%m-%d-%H-%M')), 'w') as f:
-        f.write(json.dumps(sources, default=str))
+    with open(os.path.join(settings.UPDATE_FILE_DIR, '%s.yaml' % datetime.now().strftime('%Y-%m-%d-%H-%M')), 'w') as f:
+        f.write(yaml.dump(sources))
 
     for source in sources:
         check_for_resolved(problems_dict, source, sources[source])

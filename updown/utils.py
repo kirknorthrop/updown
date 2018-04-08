@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import stat
@@ -6,10 +7,9 @@ from datetime import datetime
 from time import time
 
 import arrow
-import jsondate as json
 import requests
+import yaml
 
-from bs4 import BeautifulSoup
 from twython import Twython
 
 from updown import settings
@@ -71,20 +71,20 @@ def create_station_list():
 
         stations = list(reversed(sorted(set(stations), key=len)))
 
-        with open('stations.json', 'w') as f:
-            f.write(json.dumps(stations))
+        with open('stations.yaml', 'w') as f:
+            f.write(yaml.dump(stations))
 
     return stations
 
 
 def get_station_list():
 
-    if os.path.isfile('stations.json'):
-        stations_file_time = os.stat('stations.json')[stat.ST_MTIME]
+    if os.path.isfile('stations.yaml'):
+        stations_file_time = os.stat('stations.yaml')[stat.ST_MTIME]
 
         if (int(time()) - stations_file_time) < A_DAY_IN_SECONDS:
-            with open('stations.json') as f:
-                return json.loads(f.read())
+            with open('stations.yaml') as f:
+                return yaml.load(f.read())
 
     return create_station_list()
 
@@ -200,14 +200,14 @@ def send_tweet(tweet_text):
 
 def get_problems_dict():
     try:
-        with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'r') as f:
-            problems_dict = json.loads(f.read())
+        with open(settings.TEMPLATE_FILE_LOCATION + 'problems.yaml', 'r') as f:
+            problems_dict = yaml.load(f.read())
             if '_last_updated' in problems_dict:
                 del problems_dict['_last_updated']
     except IOError:
-        with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'w') as f:
+        with open(settings.TEMPLATE_FILE_LOCATION + 'problems.yaml', 'w') as f:
             problems_dict = {}
-            f.write(json.dumps(problems_dict))
+            f.write(yaml.dump(problems_dict))
 
     return problems_dict
 
@@ -216,7 +216,7 @@ def set_problems_dict(problems):
 
     problems['_last_updated'] = datetime.now()
 
-    with open(settings.TEMPLATE_FILE_LOCATION + 'problems.json', 'w') as f:
-        f.write(json.dumps(problems))
+    with open(settings.TEMPLATE_FILE_LOCATION + 'problems.yaml', 'w') as f:
+        f.write(yaml.dump(problems))
 
     return True

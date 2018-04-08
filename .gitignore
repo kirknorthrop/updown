@@ -1,8 +1,8 @@
 index.html
-problems.json
+problems.yaml
 settings.py
 twitter_access_token
-twitter_laststatuses.json
+twitter_laststatuses.yaml
 *.pyc
 problems.txt
 filelogs
