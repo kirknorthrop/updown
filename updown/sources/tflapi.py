@@ -26,7 +26,7 @@ def check():
                 if 'step free access is not available' in issue['description'].lower() or 'there will be no step-free access' in issue['description'].lower():
 
                     try:
-                        first_colon = issue['description'].index(':')
+                        first_colon = issue['description'].find(':')
 
                         station_name = find_station_name(issue['commonName'])
                         status_details = issue['description'][first_colon + 1:].strip()
