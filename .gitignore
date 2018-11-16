@@ -6,3 +6,4 @@ twitter_laststatuses.yaml
 *.pyc
 problems.txt
 filelogs
+.idea
