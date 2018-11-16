@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
+black = "==18.9b0"
 
 [packages]
 arrow = "==0.12.1"
