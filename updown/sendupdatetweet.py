@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from utils import (
+from updown.utils import (
     get_problem_stations,
     get_problems_dict,
     send_tweet,
@@ -19,7 +19,7 @@ def get_salutation():
         return "Hello!"
 
 
-if __name__ == '__main__':
+def do_stuff():
 
     problems = get_problem_stations(get_problems_dict())
     tweets = []
