@@ -19,7 +19,7 @@ def get_salutation():
         return "Hello!"
 
 
-def do_stuff():
+if __name__ == "__main__":
 
     problems = get_problem_stations(get_problems_dict())
     tweets = []
@@ -27,36 +27,39 @@ def do_stuff():
     salutation = get_salutation()
 
     if len(problems) == 0:
-        tweets.append(salutation + ' There are currently no reported step free access issues \
-            on the Transport for London network.')
+        tweets.append(
+            salutation
+            + " There are currently no reported step free access issues \
+            on the Transport for London network."
+        )
     else:
-        tweet_string = salutation + ' There are step free access issues at: '
+        tweet_string = salutation + " There are step free access issues at: "
 
         # So see if the tweet is too long
         # Bear in mind we will be adding 'and' between the last two
         # and (1/2) if there is more than one tweet.
         # So a single tweet can be 275, multiple 270 each.
-        if len(tweet_string + ', '.join(problems)) < 275:
-            tweet_string += ', '.join(problems[0:-1])
+        if len(tweet_string + ", ".join(problems)) < 275:
+            tweet_string += ", ".join(problems[0:-1])
             if len(problems) > 1:
-                tweet_string += ' and '
+                tweet_string += " and "
             tweet_string += problems[-1]
             tweets.append(tweet_string)
         else:
             # Too long, split it up!
             for i, station in enumerate(problems):
-                if len(tweet_string + station + ' ') > 270:
-                    if tweet_string[-2:] == ', ':
-                        tweet_string = tweet_string[0:-2] + '...'
+                if len(tweet_string + station + " ") > 270:
+                    if tweet_string[-2:] == ", ":
+                        tweet_string = tweet_string[0:-2] + "..."
                     tweets.append(tweet_string)
-                    tweet_string = '... '
+                    tweet_string = "... "
 
                 tweet_string += station
 
                 if i == len(problems) - 2:
-                    tweet_string += ' and '
+                    tweet_string += " and "
                 elif i < len(problems) - 2:
-                    tweet_string += ', '
+                    tweet_string += ", "
 
             if tweet_string:
                 tweets.append(tweet_string)

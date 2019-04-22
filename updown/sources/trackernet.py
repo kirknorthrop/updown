@@ -11,7 +11,9 @@ EXPLICIT_RESOLVE = False
 # Do everything we need to check trackernet
 def check():
 
-    StationIncidentsURI = "http://cloud.tfl.gov.uk/TrackerNet/StationStatus/IncidentsOnly"
+    StationIncidentsURI = (
+        "http://cloud.tfl.gov.uk/TrackerNet/StationStatus/IncidentsOnly"
+    )
 
     problems = {}
 
@@ -22,18 +24,18 @@ def check():
         if r.status_code == 200 and len(xml) > 0:
             soup = BeautifulSoup(xml)
 
-            for station in soup.find_all('stationstatus'):
-                if station.status['id'] == 'NS':
-                    print('**%s**' % station.station['name'])
-                    station_name = find_station_name(station.station['name'])
+            for station in soup.find_all("stationstatus"):
+                if station.status["id"] == "NS":
+                    print("**%s**" % station.station["name"])
+                    station_name = find_station_name(station.station["name"])
 
                     problems[station_name] = {
-                        'text': station['statusdetails'],
-                        'time': datetime.now(),
-                        'resolved': None,
-                        'information': False,
-                        'work_start': None,
-                        'work_end': None,
+                        "text": station["statusdetails"],
+                        "time": datetime.now(),
+                        "resolved": None,
+                        "information": False,
+                        "work_start": None,
+                        "work_end": None,
                     }
 
     except requests.exceptions.ConnectionError:
