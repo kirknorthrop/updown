@@ -5,21 +5,21 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
-black = "==18.9b0"
+black = "==19.3b0"
 
 [packages]
 arrow = "==0.12.1"
-beautifulsoup4 = "==4.6.0"
+beautifulsoup4 = ">=4.6.0"
 jsondate = "==0.1.2"
 oauthlib = "==2.0.7"
 pytz = "==2018.7"
-requests = "==2.20.1"
+requests = ">=2.20.1"
 requests-oauthlib = "==0.8.0"
 twython = "==3.6.0"
 Mako = "==1.0.7"
 MarkupSafe = "==1.0"
 JSON-Datetime = "==0.0.5"
-PyYAML = "==3.12"
+PyYAML = ">=3.12"
 
 [requires]
 python_version = "3.6"
