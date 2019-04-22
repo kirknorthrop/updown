@@ -30,6 +30,7 @@ def check():
                 if (
                     "step free access is not available" in description
                     or "there will be no step free access" in description
+                    or "no step free access to" in description
                 ):
 
                     try:
