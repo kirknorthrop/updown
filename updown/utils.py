@@ -19,6 +19,7 @@ A_DAY_IN_SECONDS = 60 * 60 * 24
 TFL_NAME_CORRECTIONS = {
     "King's Cross": "King's Cross St. Pancras",
     "Cutty Sark": "Cutty Sark for Maritime Greenwich",
+    "London Liverpool Street": "Liverpool Street",
 }
 
 
