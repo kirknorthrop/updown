@@ -56,7 +56,7 @@ def cleanup_station_name(station_name):
 def create_station_list():
     # TODO: Save this and replace once a day
 
-    modes = ["tube", "dlr", "overground", "national-rail", "tflrail"]
+    modes = ["tube", "dlr", "overground", "tflrail", "elizabeth-line"]
 
     station_status_URI = "https://api.tfl.gov.uk/StopPoint/Mode/%s?app_id=%s&app_key=%s"
 
@@ -85,7 +85,7 @@ def get_station_list():
 
         if (int(time()) - stations_file_time) < A_DAY_IN_SECONDS:
             with open("stations.yaml") as f:
-                return yaml.load(f.read())
+                return yaml.safe_load(f.read())
 
     return create_station_list()
 
@@ -222,7 +222,7 @@ def send_tweet(tweet_text):
 def get_problems_dict():
     try:
         with open(settings.TEMPLATE_FILE_LOCATION + "problems.yaml", "r") as f:
-            problems_dict = yaml.load(f.read())
+            problems_dict = yaml.safe_load(f.read())
             if "_last_updated" in problems_dict:
                 del problems_dict["_last_updated"]
     except IOError:
