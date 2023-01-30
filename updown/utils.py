@@ -1,16 +1,18 @@
-import logging
+import json
+import os
 import re
-from datetime import timedelta
+import stat
+
+from datetime import datetime
+from time import time
 
 import arrow
 import requests
 import yaml
+
 from twython import Twython
 
-from updown.storage import get_from_file, get_file_last_updated, save_to_file
-
-log = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+from updown import settings
 
 A_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -19,8 +21,6 @@ TFL_NAME_CORRECTIONS = {
     "Cutty Sark": "Cutty Sark for Maritime Greenwich",
     "London Liverpool Street": "Liverpool Street",
 }
-
-stations_list = None
 
 
 def cleanup_station_name(station_name):
@@ -54,14 +54,9 @@ def cleanup_station_name(station_name):
 
 # Getter and Creator for Station List
 def create_station_list():
-    log.info("Creating station list")
-    modes = [
-        "tube",
-        "dlr",
-        "overground",
-        "tflrail",
-        "elizabeth-line",
-    ]  # , "national-rail"]
+    # TODO: Save this and replace once a day
+
+    modes = ["tube", "dlr", "overground", "national-rail", "tflrail"]
 
     station_status_URI = "https://api.tfl.gov.uk/StopPoint/Mode/%s?app_id=%s&app_key=%s"
 
@@ -69,7 +64,7 @@ def create_station_list():
 
     for mode in modes:
         url = station_status_URI % (mode, settings.TFL_API_ID, settings.TFL_API_KEY)
-        log.info(url)
+
         r = requests.get(url)
 
         for station in r.json().get("stopPoints", []):
@@ -77,29 +72,22 @@ def create_station_list():
 
         stations = list(reversed(sorted(set(stations), key=len)))
 
-        save_to_file("stations", yaml.dump(stations))
+        with open("stations.yaml", "w") as f:
+            f.write(yaml.dump(stations))
 
     return stations
 
 
 def get_station_list():
-    global stations_list
-    if stations_list is None:
-        stations_file_time = get_file_last_updated("stations")
 
-        if (
-            stations_file_time is not None
-            and stations_file_time + timedelta(seconds=A_DAY_IN_SECONDS)
-            > arrow.utcnow()
-        ):
-            log.info("Getting station list from file")
-            data = get_from_file("stations")
-            stations_list = yaml.safe_load(data)
-        else:
-            log.info("Station list is empty")
-            stations_list = create_station_list()
+    if os.path.isfile("stations.yaml"):
+        stations_file_time = os.stat("stations.yaml")[stat.ST_MTIME]
 
-    return stations_list
+        if (int(time()) - stations_file_time) < A_DAY_IN_SECONDS:
+            with open("stations.yaml") as f:
+                return yaml.load(f.read())
+
+    return create_station_list()
 
 
 def find_station_name(possible_name):
@@ -116,7 +104,7 @@ def find_station_name(possible_name):
         if station_name.lower() in clean_station_name:
             return TFL_NAME_CORRECTIONS[station_name]
 
-    log.info(f"{clean_station_name} not found")
+    print(possible_name, "not found")
     return clean_station_name
 
 
@@ -213,7 +201,7 @@ def get_problem_stations(problems_dict):
 
 
 def send_tweet(tweet_text):
-    """Send a tweet"""
+    """ Send a tweet """
     if settings.PRODUCTION:
         try:
             twitter = Twython(
@@ -231,17 +219,25 @@ def send_tweet(tweet_text):
         print("Should have tweeted: " + tweet_text)
 
 
-def get_setting(setting_id, default=None):
-    global settings
+def get_problems_dict():
     try:
-        settings = settings or {}
-    except NameError:
-        settings = {}
+        with open(settings.TEMPLATE_FILE_LOCATION + "problems.yaml", "r") as f:
+            problems_dict = yaml.load(f.read())
+            if "_last_updated" in problems_dict:
+                del problems_dict["_last_updated"]
+    except IOError:
+        with open(settings.TEMPLATE_FILE_LOCATION + "problems.yaml", "w") as f:
+            problems_dict = {}
+            f.write(yaml.dump(problems_dict))
 
-    if not settings:
-        log.info("Getting settings from file")
-        settings_data = get_from_file("settings.yaml")
-        if settings_data is not None:
-            settings = yaml.safe_load(settings_data)
+    return problems_dict
 
-    return settings.get(setting_id) or default
+
+def set_problems_dict(problems):
+
+    problems["_last_updated"] = datetime.now()
+
+    with open(settings.TEMPLATE_FILE_LOCATION + "problems.yaml", "w") as f:
+        f.write(yaml.dump(problems))
+
+    return True
