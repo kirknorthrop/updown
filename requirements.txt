@@ -8,7 +8,7 @@ pytz==2018.7
 requests>=2.20.1
 requests-oauthlib==0.8.0
 twython==3.6.0
-Mako==1.0.7
+Mako==1.2.2
 markupsafe
 json-datetime==0.0.5
 PyYAML>=3.12
