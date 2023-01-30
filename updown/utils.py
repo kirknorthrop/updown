@@ -56,7 +56,7 @@ def cleanup_station_name(station_name):
 def create_station_list():
     # TODO: Save this and replace once a day
 
-    modes = ["tube", "dlr", "overground", "national-rail", "tflrail"]
+    modes = ["tube", "dlr", "overground", "elizabeth-line", "tflrail"]
 
     station_status_URI = "https://api.tfl.gov.uk/StopPoint/Mode/%s?app_id=%s&app_key=%s"
 
@@ -211,7 +211,7 @@ def send_tweet(tweet_text):
                 settings.TUBELIFTS_OAUTH_TOKEN_SECRET,
             )
 
-            twitter.update_status(status=tweet_text)
+            twitter.update_status(status=remove_tfl_specifics(tweet_text))
         # Except everything. TODO: Look into some of twitters annoying foibles
         except:
             pass
