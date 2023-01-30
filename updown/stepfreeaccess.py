@@ -90,7 +90,7 @@ def update_problems(problems):
 
     for problem in list(set(problems_to_remove)):
         if problem in problems:
-            del (problems[problem])
+            del problems[problem]
 
     set_problems_dict(problems)
 

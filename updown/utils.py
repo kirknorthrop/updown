@@ -201,7 +201,7 @@ def get_problem_stations(problems_dict):
 
 
 def send_tweet(tweet_text):
-    """ Send a tweet """
+    """Send a tweet"""
     if settings.PRODUCTION:
         try:
             twitter = Twython(
