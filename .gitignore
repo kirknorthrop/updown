@@ -1,9 +1,9 @@
-index.html
 problems.yaml
-settings.py
+updown/settings.py
 twitter_access_token
 twitter_laststatuses.yaml
 *.pyc
 problems.txt
 filelogs
 .idea
+.DS_Store

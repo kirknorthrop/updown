@@ -1,0 +1,15 @@
+pytest
+black
+arrow==0.12.1
+beautifulsoup4>=4.6.0
+jsondate==0.1.2
+oauthlib==2.0.7
+pytz==2018.7
+requests>=2.20.1
+requests-oauthlib==0.8.0
+twython==3.6.0
+Mako==1.0.7
+markupsafe
+json-datetime==0.0.5
+PyYAML>=3.12
+boto3
