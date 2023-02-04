@@ -10,7 +10,6 @@ EXPLICIT_RESOLVE = False
 
 
 def check():
-
     StatusPageURI = (
         "https://api.tfl.gov.uk/StopPoint/Mode/tube,cable-car,bus,dlr,national-rail,overground,river-bus,elizabeth-line,tram/Disruption?includeRouteBlockedStops=True&app_id=%s&app_key=%s"
         % (settings.TFL_API_ID, settings.TFL_API_KEY)
@@ -32,7 +31,6 @@ def check():
                     or "there will be no step free access" in description
                     or "no step free access to" in description
                 ):
-
                     try:
                         first_colon = issue["description"].find(":")
 

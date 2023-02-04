@@ -4,7 +4,6 @@ from updownold import settings
 
 
 def generate(problems, resolved, information, last_updated):
-
     if len(problems) == 0:
         alexa_string = "There are currently no reported step free access issues on the \
             Transport for London network."

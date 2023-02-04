@@ -8,7 +8,6 @@ from updownold.utils import (
 
 
 def get_salutation():
-
     if datetime.now().hour < 12:
         return "Good morning!"
     elif datetime.now().hour >= 12 and datetime.now().hour < 19:
@@ -20,7 +19,6 @@ def get_salutation():
 
 
 if __name__ == "__main__":
-
     problems = get_problem_stations(get_problems_dict())
     tweets = []
 

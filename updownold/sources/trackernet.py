@@ -10,7 +10,6 @@ EXPLICIT_RESOLVE = False
 
 # Do everything we need to check trackernet
 def check():
-
     StationIncidentsURI = (
         "http://cloud.tfl.gov.uk/TrackerNet/StationStatus/IncidentsOnly"
     )

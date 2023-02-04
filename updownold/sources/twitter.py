@@ -12,7 +12,6 @@ import os
 
 
 def get_twitter_access_token(regenerate=False):
-
     TOKEN_FILE_LOCATION = settings.TEMPLATE_FILE_LOCATION + "twitter_access_token"
 
     if not regenerate and os.path.isfile(TOKEN_FILE_LOCATION):
@@ -31,7 +30,6 @@ def get_twitter_access_token(regenerate=False):
 
 
 def get_twitter():
-
     try:
         twitter = Twython(settings.TWITTER_KEY, access_token=get_twitter_access_token())
         twitter.get_user_timeline(screen_name="TfL")
@@ -59,7 +57,6 @@ def get_twitter():
 
 # Get a twitter object
 def get_twitter():
-
     if twitter is None:
         try:
             twitter = Twython(APP_KEY, access_token=get_twitter_access_token())
@@ -72,7 +69,6 @@ def get_twitter():
 
 # Do we need to update twitter again yet?
 def twitter_needs_update():
-
     last_twitter = datetime.strptime(
         get_problems_dict()["_twitter_update"], "%Y-%m-%dT%H:%M:%S"
     )
@@ -90,7 +86,6 @@ def convert_tweet_time(time):
 
 # Getter, Setter, Creator and Saver for twitter accounts and last statuses
 def get_twitter_last_statuses():
-
     if twitter_last_statuses is None:
         try:
             with open(
@@ -118,7 +113,6 @@ def get_twitter_last_statuses():
 
 
 def set_twitter_last_statuses(last_statuses):
-
     twitter_last_statuses = last_statuses
     with open(settings.TEMPLATE_FILE_LOCATION + "twitter_laststatuses.json", "w") as f:
         f.write(yaml.dump(last_statuses))
@@ -128,7 +122,6 @@ def set_twitter_last_statuses(last_statuses):
 
 # Do everything we need to check twitter
 def check_twitter():
-
     h = HTMLParser.HTMLParser()
 
     twitter = get_twitter()

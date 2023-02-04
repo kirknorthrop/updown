@@ -79,7 +79,6 @@ def create_station_list():
 
 
 def get_station_list():
-
     if os.path.isfile("stations.yaml"):
         stations_file_time = os.stat("stations.yaml")[stat.ST_MTIME]
 
@@ -91,7 +90,6 @@ def get_station_list():
 
 
 def find_station_name(possible_name):
-
     clean_station_name = cleanup_station_name(possible_name).lower()
 
     # Correlate a name from a tweet/trackernet with one we expect to find
@@ -234,7 +232,6 @@ def get_problems_dict():
 
 
 def set_problems_dict(problems):
-
     problems["_last_updated"] = datetime.now()
 
     with open(settings.TEMPLATE_FILE_LOCATION + "problems.yaml", "w") as f:

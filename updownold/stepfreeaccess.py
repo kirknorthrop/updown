@@ -27,7 +27,6 @@ DEFAULT_EXCUSE = "There are step free access issues at this station."
 
 
 def set_problem_for_station(station, problem):
-
     problems = get_problems_dict()
 
     problems[station] = problem
@@ -43,7 +42,6 @@ def update_problems(problems):
 
     for problem in problems.keys():
         if problem and problem[0:1] != "_":
-
             tweet = None
 
             if problems[problem].get("new-problem", False) and problem:
@@ -173,7 +171,6 @@ def update_problems_from_source(source_id, source, problems):
 
 
 def update_site():
-
     problems_dict = get_problems_dict()
 
     sources = {
