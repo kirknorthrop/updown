@@ -75,8 +75,8 @@ def update_station_list():
                     setattr(station, MODE_TRANSFORM[mode], True)
                     station.save()
 
-                data_points_returned += data.get('pageSize')
-                if data.get('total') > data_points_returned:
+                data_points_returned += data.get("pageSize")
+                if data.get("total") > data_points_returned:
                     page += 1
                 else:
                     end_of_pages = True
