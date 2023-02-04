@@ -18,7 +18,4 @@ from django.urls import path
 
 from incidents.views import detail
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", detail)
-]
+urlpatterns = [path("admin/", admin.site.urls), path("", detail)]
