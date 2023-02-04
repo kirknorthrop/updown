@@ -9,7 +9,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             update_station_list()
-        except Exception:
-            raise CommandError("Error updating station list")
+        except Exception as e:
+            raise CommandError(f"Error updating station list: {e}")
 
         self.stdout.write(self.style.SUCCESS("Successfully updated station list"))

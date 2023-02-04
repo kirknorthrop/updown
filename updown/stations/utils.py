@@ -34,30 +34,52 @@ def cleanup_station_name(station_name):
 
 
 def update_station_list():
-    modes = ["tube", "dlr", "overground", "tflrail", "elizabeth-line"]
+    modes = [
+        "tube",
+        "dlr",
+        "overground",
+        "elizabeth-line",
+        "national-rail",
+    ]
 
-    station_status_uri = "https://api.tfl.gov.uk/StopPoint/Mode/%s?app_id=%s&app_key=%s"
+    station_status_uri = f"https://api.tfl.gov.uk/StopPoint/Mode/%s?app_id={settings.TFL_API_ID}&app_key={settings.TFL_API_KEY}&page=%d"
 
     MODE_TRANSFORM = {
         "tube": "tube",
         "dlr": "dlr",
-        "": "national_rail",
-        "elizabeth-line": "crossrail",
         "overground": "overground",
+        "elizabeth-line": "crossrail",
+        "national-rail": "national_rail",
     }
 
-    for mode in modes:
-        url = station_status_uri % (mode, settings.TFL_API_ID, settings.TFL_API_KEY)
+    try:
+        for mode in modes:
+            end_of_pages = False
+            page = 1
+            data_points_returned = 0
 
-        r = requests.get(url)
+            while not end_of_pages:
+                url = station_status_uri % (mode, page)
 
-        for stop_point in r.json().get("stopPoints", []):
-            station_name = cleanup_station_name(stop_point["commonName"])
+                r = requests.get(url)
+                data = r.json()
 
-            station, _ = Station.objects.get_or_create(
-                name=station_name,
-                naptan_id=stop_point.get("stationNaptan"),
-                hub_naptan_id=stop_point.get("hubNaptanCode"),
-            )
-            setattr(station, MODE_TRANSFORM[mode], True)
-            station.save()
+                for stop_point in data.get("stopPoints", []):
+                    station_name = cleanup_station_name(stop_point["commonName"])
+
+                    station, _ = Station.objects.get_or_create(
+                        name=station_name,
+                        naptan_id=stop_point.get("stationNaptan"),
+                        hub_naptan_id=stop_point.get("hubNaptanCode"),
+                    )
+                    setattr(station, MODE_TRANSFORM[mode], True)
+                    station.save()
+
+                data_points_returned += data.get('pageSize')
+                if data.get('total') > data_points_returned:
+                    page += 1
+                else:
+                    end_of_pages = True
+
+    except Exception as e:
+        raise

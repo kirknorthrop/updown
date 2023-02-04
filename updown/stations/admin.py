@@ -13,7 +13,7 @@ class StationAdmin(admin.ModelAdmin):
         "crossrail",
         "overground",
     )
-    list_filter = ["name", "tube", "dlr", "national_rail", "crossrail", "overground"]
+    list_filter = ["tube", "dlr", "national_rail", "crossrail", "overground"]
     ordering = ("name",)
     search_fields = ["name"]
 
