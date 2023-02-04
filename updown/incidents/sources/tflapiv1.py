@@ -1,21 +1,19 @@
-import requests
-
-
 from datetime import datetime
 
-from updownold import settings
-from updownold.utils import find_station_name, find_dates, fix_additional_info_grammar
+import requests
+from django.conf import settings
+from incidents.models import Report
+from incidents.utils import find_dates, fix_additional_info_grammar
+from stations.utils import find_station
 
 EXPLICIT_RESOLVE = False
 
 
 def check():
     StatusPageURI = (
-        "https://api.tfl.gov.uk/StopPoint/Mode/tube,cable-car,bus,dlr,national-rail,overground,river-bus,elizabeth-line,tram/Disruption?includeRouteBlockedStops=True&app_id=%s&app_key=%s"
+        "https://api.tfl.gov.uk/StopPoint/Mode/tube,cable-car,dlr,national-rail,overground,river-bus,elizabeth-line,tram/Disruption?includeRouteBlockedStops=True&app_id=%s&app_key=%s"
         % (settings.TFL_API_ID, settings.TFL_API_KEY)
     )
-
-    problems = {}
 
     try:
         r = requests.get(StatusPageURI)
@@ -34,7 +32,7 @@ def check():
                     try:
                         first_colon = issue["description"].find(":")
 
-                        station_name = find_station_name(issue["commonName"])
+                        station = find_station(issue["commonName"])
                         status_details = issue["description"][first_colon + 1 :].strip()
                         status_details = status_details.replace(
                             "No Step Free Access - ", ""
@@ -46,29 +44,26 @@ def check():
                             )
                             status_details += "<p><i>%s</i></p>" % additional_info
 
-                        problems[station_name] = {
-                            "text": status_details,
-                            "time": datetime.now(),
-                            "resolved": None,
-                            "information": issue["appearance"] != "RealTime",
-                            "work_start": None,
-                            "work_end": None,
-                        }
+                        report, created = Report.objects.get_or_create(
+                            station=station,
+                            text=status_details,
+                            source=Report.SOURCE_TFLAPI_V1,
+                            information=issue["appearance"] != "RealTime",
+                        )
 
-                        if issue["appearance"] == "PlannedWork":
-                            start_date, end_date = find_dates(status_details)
-                            problems[station_name]["work_start"] = start_date
-                            problems[station_name]["work_end"] = end_date
-                            if " changes " not in status_details:
-                                if (start_date and start_date < datetime.now()) or (
-                                    end_date and end_date > datetime.now()
-                                ):
-                                    problems[station_name]["information"] = False
-
+                        if created:
+                            if issue["appearance"] == "PlannedWork":
+                                start_date, end_date = find_dates(status_details)
+                                report.start_time = start_date
+                                report.end_time = end_date
+                                if " changes " not in status_details:
+                                    if (start_date and start_date < datetime.now()) or (
+                                        end_date and end_date > datetime.now()
+                                    ):
+                                        report.information = False
+                            report.save()
                     except ValueError:
                         pass
 
     except requests.exceptions.ConnectionError:
         pass
-
-    return problems

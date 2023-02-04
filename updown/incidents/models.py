@@ -39,3 +39,6 @@ class Report(models.Model):
         max_length=1,
         choices=SOURCE_CHOICES,
     )
+
+    def __str__(self):
+        return f"{self.station.name} - Resolved: {self.resolved} - {self.get_source_display()}"

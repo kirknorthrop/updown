@@ -1,5 +1,6 @@
 import requests
 from django.conf import settings
+from django.db.models import Q
 
 from stations.models import Station
 
@@ -83,3 +84,19 @@ def update_station_list():
 
     except Exception as e:
         raise
+
+
+def find_station(possible_name):
+    clean_station_name = cleanup_station_name(possible_name).lower()
+
+    station = Station.objects.filter(name__iexact=clean_station_name).first()
+
+    return station
+
+
+def find_station_from_naptan(naptan_id):
+    station = Station.objects.filter(
+        Q(naptan_id=naptan_id) | Q(hub_naptan_id=naptan_id)
+    ).first()
+
+    return station

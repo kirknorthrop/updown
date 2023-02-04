@@ -23,35 +23,9 @@ TFL_NAME_CORRECTIONS = {
 }
 
 
-# Getter and Creator for Station List
 
 
-def get_station_list():
-    if os.path.isfile("stations.yaml"):
-        stations_file_time = os.stat("stations.yaml")[stat.ST_MTIME]
 
-        if (int(time()) - stations_file_time) < A_DAY_IN_SECONDS:
-            with open("stations.yaml") as f:
-                return yaml.safe_load(f.read())
-
-    return create_station_list()
-
-
-def find_station_name(possible_name):
-    clean_station_name = cleanup_station_name(possible_name).lower()
-
-    # Correlate a name from a tweet/trackernet with one we expect to find
-    for station_name in get_station_list():
-        if station_name.lower() in clean_station_name:
-            return station_name
-
-    # If we don't find it in the proper list, we have to look in our corrections list
-    for station_name in TFL_NAME_CORRECTIONS.keys():
-        if station_name.lower() in clean_station_name:
-            return TFL_NAME_CORRECTIONS[station_name]
-
-    print(possible_name, "not found")
-    return clean_station_name
 
 
 def remove_tfl_specifics(text):
@@ -85,51 +59,12 @@ def remove_tfl_specifics(text):
     return text
 
 
-def fix_additional_info_grammar(text):
-    # It appears that full stops and spaces aren't always used...
-    text = re.sub(r"\.([A-Z<])", r". \1", text)
-    text = re.sub(r"[^ \.](Please allow extra time for your journey.)", r". \1", text)
-
-    return text
 
 
-def parse_date(text):
-    possible_formats = ["D MMMM YYYY", "D MMMM", "MMMM YYYY", "MMMM"]
-
-    try:
-        date_ = arrow.get(text, possible_formats)
-        if "early" in text:
-            date_ = date_.replace(day=10)
-        if "mid" in text:
-            date_ = date_.replace(day=20)
-        if "late" in text:
-            date_ = date_.ceil("month")
-
-        if date_.year == 1:
-            date_ = date_.replace(year=arrow.utcnow().year)
-
-        date_ = date_.naive
-
-    except:
-        date_ = None
-
-    return date_
 
 
-def find_dates(text):
-    start_and_end = re.search("From (.*?) until (.*?)(,|there|due)", text, flags=re.I)
 
-    start_date = None
-    end_date = None
 
-    if start_and_end:
-        start_date = parse_date(start_and_end.groups()[0])
-        end_date = parse_date(start_and_end.groups()[1])
-
-        while start_date and end_date and end_date < start_date:
-            start_date = start_date.replace(year=start_date.year - 1)
-
-    return start_date, end_date
 
 
 def get_problem_stations(problems_dict):
