@@ -25,7 +25,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", False)
 
-ALLOWED_HOSTS = ["127.0.0.1", "updownlondon-y6nyh.ondigitalocean.app", "updownlondon.com", "updownlondon.info"]
+ALLOWED_HOSTS = ["127.0.0.1", "updownlondon-bayld.ondigitalocean.app", "updownlondon.com", "updownlondon.info"]
 
 
 # Application definition
