@@ -3,8 +3,8 @@ import requests
 
 from datetime import datetime
 
-from updown import settings
-from updown.utils import find_station_name, find_dates, fix_additional_info_grammar
+from updownold import settings
+from updownold.utils import find_station_name, find_dates, fix_additional_info_grammar
 
 EXPLICIT_RESOLVE = False
 

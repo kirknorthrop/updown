@@ -12,7 +12,7 @@ import yaml
 
 from twython import Twython
 
-from updown import settings
+from updownold import settings
 
 A_DAY_IN_SECONDS = 60 * 60 * 24
 

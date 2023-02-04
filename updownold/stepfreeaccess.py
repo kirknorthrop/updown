@@ -3,18 +3,18 @@ import yaml
 
 from datetime import datetime, timedelta
 
-from updown.utils import (
+from updownold.utils import (
     get_problems_dict,
     remove_tfl_specifics,
     send_tweet,
     set_problems_dict,
 )
 
-from updown.sources import tflapi, trackernet
-from updown import sources as scs
-from updown.outputs import website, alexa
+from updownold.sources import tflapi, trackernet
+from updownold import sources as scs
+from updownold.outputs import website, alexa
 
-from updown import settings
+from updownold import settings
 
 
 # Some "constants" and globals

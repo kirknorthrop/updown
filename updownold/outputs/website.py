@@ -1,6 +1,6 @@
 from mako.template import Template
 
-from updown import settings, utils
+from updownold import settings, utils
 
 
 def generate(problems, resolved, information, last_updated):

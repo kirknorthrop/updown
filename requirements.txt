@@ -13,3 +13,4 @@ markupsafe
 json-datetime
 PyYAML>=3.12
 boto3
+django

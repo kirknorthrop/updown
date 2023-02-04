@@ -1,6 +1,6 @@
 import json
 
-from updown import settings
+from updownold import settings
 
 
 def generate(problems, resolved, information, last_updated):

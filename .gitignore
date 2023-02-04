@@ -1,5 +1,5 @@
 problems.yaml
-updown/settings.py
+updownold/settings.py
 twitter_access_token
 twitter_laststatuses.yaml
 *.pyc

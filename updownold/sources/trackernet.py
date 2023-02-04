@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from updown.utils import find_station_name
+from updownold.utils import find_station_name
 
 EXPLICIT_RESOLVE = False
 

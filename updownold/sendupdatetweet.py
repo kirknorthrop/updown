@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from updown.utils import (
+from updownold.utils import (
     get_problem_stations,
     get_problems_dict,
     send_tweet,
