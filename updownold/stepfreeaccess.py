@@ -10,7 +10,6 @@ from updownold.utils import (
     set_problems_dict,
 )
 
-from updown.incidents.sources import tflapiv1
 from updownold import sources as scs
 from updownold.outputs import website, alexa
 
