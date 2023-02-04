@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
@@ -23,7 +24,13 @@ class Station(models.Model):
     )
 
     name = models.CharField(max_length=200)
-    naptan_id = models.CharField(max_length=32, verbose_name="NaPTAN ID")
+    alternate_names = ArrayField(models.CharField(max_length=128), null=True)
+    naptan_id = models.CharField(
+        max_length=32, null=True, blank=True, verbose_name="NaPTAN ID"
+    )
+    hub_naptan_id = models.CharField(
+        max_length=32, null=True, blank=True, verbose_name="Hub NaPTAN ID"
+    )
     notes = models.TextField()
 
     step_to_train = models.CharField(
@@ -47,8 +54,11 @@ class Station(models.Model):
         null=True, blank=True, verbose_name="Connection to National Rail"
     )
 
-    tube = models.BooleanField()
-    dlr = models.BooleanField(verbose_name="DLR")
-    national_rail = models.BooleanField(verbose_name="National Rail")
-    crossrail = models.BooleanField()
-    overground = models.BooleanField()
+    tube = models.BooleanField(null=True, blank=True)
+    dlr = models.BooleanField(null=True, blank=True, verbose_name="DLR")
+    national_rail = models.BooleanField(null=True, verbose_name="National Rail")
+    crossrail = models.BooleanField(null=True, blank=True)
+    overground = models.BooleanField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name

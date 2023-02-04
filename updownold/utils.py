@@ -23,59 +23,7 @@ TFL_NAME_CORRECTIONS = {
 }
 
 
-def cleanup_station_name(station_name):
-
-    to_remove = [
-        "Rail Station",
-        "Underground Station",
-        "Underground Stn",
-        "Overground Station",
-        "DLR Station",
-        "Station",
-        "(London)",
-        "(",
-        ")",
-        "Dist&Picc Line",
-        "Circle Line",
-        "Bakerloo Line",
-        "Central Line",
-        "H&C Line-Underground",
-    ]
-
-    for item in to_remove:
-        station_name = station_name.replace(item, "")
-
-    # Kensington (Olympia) is the only station with parentheses in its name on the tube map.
-    if station_name == "Kensington Olympia":
-        station_name = "Kensington (Olympia)"
-
-    return station_name.strip()
-
-
 # Getter and Creator for Station List
-def create_station_list():
-    # TODO: Save this and replace once a day
-
-    modes = ["tube", "dlr", "overground", "tflrail", "elizabeth-line"]
-
-    station_status_URI = "https://api.tfl.gov.uk/StopPoint/Mode/%s?app_id=%s&app_key=%s"
-
-    stations = []
-
-    for mode in modes:
-        url = station_status_URI % (mode, settings.TFL_API_ID, settings.TFL_API_KEY)
-
-        r = requests.get(url)
-
-        for station in r.json().get("stopPoints", []):
-            stations.append(cleanup_station_name(station["commonName"]))
-
-        stations = list(reversed(sorted(set(stations), key=len)))
-
-        with open("stations.yaml", "w") as f:
-            f.write(yaml.dump(stations))
-
-    return stations
 
 
 def get_station_list():
