@@ -23,11 +23,6 @@ TFL_NAME_CORRECTIONS = {
 }
 
 
-
-
-
-
-
 def remove_tfl_specifics(text):
     # We always reset this just in case there is an update
     text = re.sub("(Please )?[Cc]all.*0[38]43 ?222 ?1234.*journey\.?", "", text)
@@ -57,14 +52,6 @@ def remove_tfl_specifics(text):
     text = re.sub("Call 0343 222 1234 for further help\.?", "", text, re.IGNORECASE)
 
     return text
-
-
-
-
-
-
-
-
 
 
 def get_problem_stations(problems_dict):

@@ -9,6 +9,6 @@ def main(args):
     function_name = "update_incidents"
     secret_key = os.getenv("FUNCTIONS_SECRET_KEY", "verysecret")
 
-    r = requests.post(urljoin(url_base, function_name), data={"key":secret_key})
+    r = requests.post(urljoin(url_base, function_name), data={"key": secret_key})
 
     r.raise_for_status()

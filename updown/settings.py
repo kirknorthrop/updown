@@ -142,3 +142,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 TFL_API_ID = os.getenv("TFL_API_ID")
 TFL_API_KEY = os.getenv("TFL_API_KEY")
+
+FUNCTIONS_SECRET_KEY = os.getenv("FUNCTIONS_SECRET_KEY", "verysecret")
