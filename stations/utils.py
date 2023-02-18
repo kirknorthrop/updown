@@ -74,6 +74,14 @@ def update_station_list():
                         hub_naptan_id=stop_point.get("hubNaptanCode"),
                     )
                     setattr(station, MODE_TRANSFORM[mode], True)
+
+                    parent_station = station
+                    if station.hub_naptan_id:
+                        try:
+                            parent_station = Station.objects.filter(hub_naptan_id=station.hub_naptan_id).first()
+                        except Station.DoesNotExist:
+                            pass
+                    station.parent_station = parent_station
                     station.save()
 
                 data_points_returned += data.get("pageSize")
@@ -84,6 +92,8 @@ def update_station_list():
 
     except Exception as e:
         raise
+
+
 
 
 def find_station(possible_name):

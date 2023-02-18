@@ -10,8 +10,8 @@ from incidents.models import Report
 
 
 def detail(request):
-    issues = Report.objects.filter(resolved=False).order_by("station__name").distinct("station__name")
-    resolved = Report.objects.filter(resolved=True).order_by("station__name").distinct("station__name")
+    issues = Report.objects.filter(resolved=False).order_by("station__parent_station__name").distinct("station__parent_station__name")
+    resolved = Report.objects.filter(resolved=True).order_by("station__parent_station__name").distinct("station__parent_station__name")
 
     return render(request, "main_page.html", {"issues": issues, "resolved": resolved})
 
