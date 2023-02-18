@@ -6,3 +6,9 @@ packages:
     actions:
       - name: update_incidents
         runtime: 'python:default'
+        web: false
+        triggers:
+          - name: trigger-update-incidents
+            sourceType: scheduler
+            sourceDetails:
+              cron: "* * * * *"
