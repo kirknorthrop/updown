@@ -10,9 +10,10 @@ from incidents.models import Report
 
 
 def detail(request):
-    issues = Report.objects.all().distinct("station")
+    issues = Report.objects.filter(resolved=False).distinct("station")
+    resolved = Report.objects.all(resolved=True).distinct("station")
 
-    return render(request, "main_page.html", {"issues": issues, "resolved": issues})
+    return render(request, "main_page.html", {"issues": issues, "resolved": resolved})
 
 
 @method_decorator(csrf_exempt, name="dispatch")
