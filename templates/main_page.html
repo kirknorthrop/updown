@@ -102,28 +102,28 @@
 				</div>
 			{% endif %}
 
-			% if len(information_sort) > 0:
-			<div class="row">
-				<div class="col-md-6 col-md-offset-3">
-					<h2>Information</h2>
-					<div class="planned-maintenance">
-						% for problem in information_sort:
-							<div class="issue">
-								<h3>${problem}</h3>
-								<p>
-									% if information[problem]['work_start']:
-										<!--<i>From ${information[problem]['work_start']}</i>-->
-									% elif information[problem]['work_end']:
-										<!--<i>Until ${information[problem]['work_end']}</i>-->
-									% endif
-									${information[problem]['text']}
-								</p>
-							</div>
-						% endfor
-					</div>
-				</div>
-			</div>
-			% endif
+            {% if information %}
+                <div class="row">
+                    <div class="col-md-6 col-md-offset-3">
+                        <h2>Information</h2>
+                        <div class="planned-maintenance">
+                            % for problem in information_sort:
+                                <div class="issue">
+                                    <h3>${problem}</h3>
+                                    <p>
+                                        % if information[problem]['work_start']:
+                                            <!--<i>From ${information[problem]['work_start']}</i>-->
+                                        % elif information[problem]['work_end']:
+                                            <!--<i>Until ${information[problem]['work_end']}</i>-->
+                                        % endif
+                                        ${information[problem]['text']}
+                                    </p>
+                                </div>
+                            % endfor
+                        </div>
+                    </div>
+                </div>
+			{% endif %}
 
 			<hr>
 			<div class="row">
