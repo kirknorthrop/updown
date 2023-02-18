@@ -1,5 +1,5 @@
 packages:
-  - name: updownlondon
+  - name: updown
     actions:
       - name: update_incidents
         runtime: 'python:default'
