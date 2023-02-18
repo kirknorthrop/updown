@@ -14,9 +14,9 @@ def detail(request):
 
     return render(request, "main_page.html", {"issues": issues, "resolved": issues})
 
-@method_decorator(csrf_exempt, name='dispatch')
-class UpdateIncidentsView(View):
 
+@method_decorator(csrf_exempt, name="dispatch")
+class UpdateIncidentsView(View):
     def post(self, request, *args, **kwargs):
         if request.POST.get("key") == settings.FUNCTIONS_SECRET_KEY:
             call_command("update_incidents")

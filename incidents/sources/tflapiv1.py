@@ -15,6 +15,10 @@ def check():
         % (settings.TFL_API_ID, settings.TFL_API_KEY)
     )
 
+    cleared_disruption = list(
+        Report.objects.filter(resolved=False, source=Report.SOURCE_TFLAPI_V1)
+    )
+
     try:
         r = requests.get(StatusPageURI)
 
@@ -62,8 +66,15 @@ def check():
                                     ):
                                         report.information = False
                             report.save()
+                        else:
+                            cleared_disruption.remove(report)
                     except ValueError:
                         pass
+
+        for report in cleared_disruption:
+            report.resolved = True
+            report.end_time = datetime.now()
+            report.save()
 
     except requests.exceptions.ConnectionError:
         pass
