@@ -3,7 +3,7 @@ environment:
   FUNCTIONS_SECRET_KEY: '${FUNCTIONS_SECRET_KEY}'
 packages:
   - name: updown
-    actions:
+    functions:
       - name: update_incidents
         runtime: 'python:default'
         web: false
