@@ -2,11 +2,10 @@ from datetime import datetime
 
 import requests
 from django.conf import settings
+
 from incidents.models import Report
 from incidents.utils import find_dates, fix_additional_info_grammar
-from stations.utils import find_station
-
-EXPLICIT_RESOLVE = False
+from stations.utils import find_station_from_naptan
 
 
 def check():
@@ -32,11 +31,12 @@ def check():
                     "step free access is not available" in description
                     or "there will be no step free access" in description
                     or "no step free access to" in description
+                    or "no step free access" in description
                 ):
                     try:
                         first_colon = issue["description"].find(":")
 
-                        station = find_station(issue["commonName"])
+                        station = find_station_from_naptan(issue["atcoCode"])
                         status_details = issue["description"][first_colon + 1 :].strip()
                         status_details = status_details.replace(
                             "No Step Free Access - ", ""
