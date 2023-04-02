@@ -28,7 +28,7 @@ def detail(request):
 
     return render(
         request,
-        "main_page.html",
+        "home.html",
         {"issues": issues, "resolved": resolved, "information": information},
     )
 
