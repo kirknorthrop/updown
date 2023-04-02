@@ -11,6 +11,9 @@ class Incident(models.Model):
     resolved = models.BooleanField(default=False)
     reports = models.ManyToManyField("incidents.Report")
 
+    def __str__(self):
+        return f"{self.station.name} - Resolved: {self.resolved} - {self.reports.count()} reports"
+
 
 class Report(models.Model):
     SOURCE_TWITTER = "T"
