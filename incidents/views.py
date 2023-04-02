@@ -26,7 +26,11 @@ def detail(request):
         .distinct("station__parent_station__name")
     )
 
-    return render(request, "main_page.html", {"issues": issues, "resolved": resolved, 'information': information})
+    return render(
+        request,
+        "main_page.html",
+        {"issues": issues, "resolved": resolved, "information": information},
+    )
 
 
 @method_decorator(csrf_exempt, name="dispatch")
