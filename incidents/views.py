@@ -1,7 +1,10 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.core.management import call_command
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -16,7 +19,9 @@ def detail(request):
         .distinct("station__parent_station__name")
     )
     resolved = (
-        Report.objects.filter(resolved=True)
+        Report.objects.filter(
+            resolved=True, end_time__gte=timezone.now() - timedelta(hours=12)
+        )
         .order_by("station__parent_station__name")
         .distinct("station__parent_station__name")
     )
