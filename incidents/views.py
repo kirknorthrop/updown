@@ -9,22 +9,22 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from incidents.models import Report
+from incidents.models import Incident
 
 ISSUES_QUERY = (
-    Report.objects.filter(resolved=False)
+    Incident.objects.filter(resolved=False)
     .order_by("station__parent_station__name")
     .distinct("station__parent_station__name")
 )
 RESOLVED_QUERY = (
-    Report.objects.filter(
+    Incident.objects.filter(
         resolved=True, end_time__gte=timezone.now() - timedelta(hours=12)
     )
     .order_by("station__parent_station__name")
     .distinct("station__parent_station__name")
 )
 INFORMATION_QUERY = (
-    Report.objects.filter(resolved=False, information=True)
+    Incident.objects.filter(resolved=False, information=True)
     .order_by("station__parent_station__name")
     .distinct("station__parent_station__name")
 )
