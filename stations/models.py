@@ -60,7 +60,9 @@ class Station(models.Model):
     crossrail = models.BooleanField(null=True, blank=True)
     overground = models.BooleanField(null=True, blank=True)
 
-    parent_station = models.ForeignKey("stations.Station", on_delete=models.DO_NOTHING, null=True, blank=True)
+    parent_station = models.ForeignKey(
+        "stations.Station", on_delete=models.DO_NOTHING, null=True, blank=True
+    )
 
     def __str__(self):
         return self.name

@@ -78,7 +78,9 @@ def update_station_list():
                     parent_station = station
                     if station.hub_naptan_id:
                         try:
-                            parent_station = Station.objects.filter(hub_naptan_id=station.hub_naptan_id).first()
+                            parent_station = Station.objects.filter(
+                                hub_naptan_id=station.hub_naptan_id
+                            ).first()
                         except Station.DoesNotExist:
                             pass
                     station.parent_station = parent_station
@@ -92,8 +94,6 @@ def update_station_list():
 
     except Exception as e:
         raise
-
-
 
 
 def find_station(possible_name):

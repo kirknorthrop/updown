@@ -1,13 +1,8 @@
-from datetime import datetime
-
 import requests
 from django.conf import settings
+
 from incidents.models import Report
-from stations.utils import find_station
-
 from stations.utils import find_station_from_naptan
-
-EXPLICIT_RESOLVE = False
 
 
 def check():
