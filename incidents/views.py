@@ -20,8 +20,13 @@ def detail(request):
         .order_by("station__parent_station__name")
         .distinct("station__parent_station__name")
     )
+    information = (
+        Report.objects.filter(resolved=False, information=True)
+        .order_by("station__parent_station__name")
+        .distinct("station__parent_station__name")
+    )
 
-    return render(request, "main_page.html", {"issues": issues, "resolved": resolved})
+    return render(request, "main_page.html", {"issues": issues, "resolved": resolved, 'information': information})
 
 
 @method_decorator(csrf_exempt, name="dispatch")

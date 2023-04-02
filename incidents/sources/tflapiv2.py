@@ -1,5 +1,8 @@
+from datetime import datetime
+
 import requests
 from django.conf import settings
+from django.utils import timezone
 
 from incidents.models import Report
 from stations.utils import find_station_from_naptan
@@ -43,7 +46,7 @@ def check():
 
         for report in cleared_disruption:
             report.resolved = True
-            report.end_time = datetime.now()
+            report.end_time = timezone.now()
             report.save()
 
     except requests.exceptions.ConnectionError:

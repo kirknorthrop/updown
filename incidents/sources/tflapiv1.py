@@ -1,7 +1,6 @@
-from datetime import datetime
-
 import requests
 from django.conf import settings
+from django.utils import timezone
 
 from incidents.models import Report
 from incidents.utils import find_dates, fix_additional_info_grammar
@@ -61,8 +60,8 @@ def check():
                                 report.start_time = start_date
                                 report.end_time = end_date
                                 if " changes " not in status_details:
-                                    if (start_date and start_date < datetime.now()) or (
-                                        end_date and end_date > datetime.now()
+                                    if (start_date and start_date < timezone.now()) or (
+                                        end_date and end_date > timezone.now()
                                     ):
                                         report.information = False
                             report.save()
@@ -73,7 +72,7 @@ def check():
 
         for report in cleared_disruption:
             report.resolved = True
-            report.end_time = datetime.now()
+            report.end_time = timezone.now()
             report.save()
 
     except requests.exceptions.ConnectionError:
