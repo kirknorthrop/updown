@@ -9,6 +9,7 @@ gunicorn
 json-datetime
 jsondate
 markupsafe
+newrelic
 oauthlib
 psycopg2-binary
 pytest
