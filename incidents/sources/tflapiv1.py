@@ -3,7 +3,11 @@ from django.conf import settings
 from django.utils import timezone
 
 from incidents.models import Report
-from incidents.utils import find_dates, fix_additional_info_grammar
+from incidents.utils import (
+    find_dates,
+    fix_additional_info_grammar,
+    remove_tfl_specifics,
+)
 from stations.utils import find_station_from_naptan
 
 
@@ -40,6 +44,7 @@ def check():
                         status_details = status_details.replace(
                             "No Step Free Access - ", ""
                         )
+                        status_details = remove_tfl_specifics(status_details)
 
                         if issue.get("additionalInformation"):
                             additional_info = fix_additional_info_grammar(

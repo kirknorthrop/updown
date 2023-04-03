@@ -11,6 +11,37 @@ TFL_NAME_CORRECTIONS = {
 }
 
 
+def remove_tfl_specifics(text):
+    # We always reset this just in case there is an update
+    text = re.sub("(Please )?[Cc]all.*0[38]43 ?222 ?1234.*journey\.?", "", text)
+    text = re.sub("we ", "TfL ", text, re.IGNORECASE)
+    text = re.sub("member of staff", "member of TfL staff", text, re.IGNORECASE)
+    text = re.sub(
+        "Call our Travel Information Centre on 0343 222 1234 if you need more help\.?",
+        "",
+        text,
+        re.IGNORECASE,
+    )
+    text = re.sub(
+        "Call our Travel Information Centre on 0343 222 1234 for further help\.?",
+        "",
+        text,
+        re.IGNORECASE,
+    )
+    text = re.sub(
+        "Call our Travel Information Centre on 0343 222 1234 for help planning your journey\.?",
+        "",
+        text,
+        re.IGNORECASE,
+    )
+    text = re.sub(
+        "Call us on 0343 222 1234 if you need more help\.?", "", text, re.IGNORECASE
+    )
+    text = re.sub("Call 0343 222 1234 for further help\.?", "", text, re.IGNORECASE)
+
+    return text
+
+
 def parse_date(text):
     possible_formats = ["D MMMM YYYY", "D MMMM", "MMMM YYYY", "MMMM"]
 
