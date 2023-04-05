@@ -75,10 +75,10 @@ def check():
                     except ValueError:
                         pass
 
-        for report in cleared_disruption:
-            report.resolved = True
-            report.end_time = timezone.now()
-            report.save()
+            for report in cleared_disruption:
+                report.resolved = True
+                report.end_time = timezone.now()
+                report.save()
 
     except requests.exceptions.ConnectionError:
         pass
