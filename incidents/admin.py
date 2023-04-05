@@ -12,7 +12,15 @@ class ReportInline(admin.TabularInline):
 class IncidentAdmin(admin.ModelAdmin):
     exclude = ["reports"]
     search_fields = ["station__name", "text"]
-    list_filter = ["resolved", "station__parent_station__name"]
+    list_filter = ["resolved", "start_time", "station__parent_station__name"]
+    list_display = (
+        "station",
+        "start_time",
+        "end_time",
+        "information",
+        "resolved",
+    )
+    ordering = ("-start_time",)
 
     inlines = [
         ReportInline,
@@ -23,6 +31,15 @@ class IncidentAdmin(admin.ModelAdmin):
 class ReportAdmin(admin.ModelAdmin):
     search_fields = ["station__name", "text"]
     list_filter = ["resolved", "station__parent_station__name", "source"]
+    list_display = (
+        "station",
+        "start_time",
+        "end_time",
+        "information",
+        "resolved",
+        "source",
+    )
+    ordering = ("-start_time",)
 
 
 admin.site.site_header = "Up Down London Administration"
