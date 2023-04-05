@@ -23,21 +23,27 @@
             <h2>Current Issues</h2>
             <div class="current-issues">
                 {% if issues %}
-                    {% for issue in issues %}
+                    {% regroup issues by station as station_list %}
+                    {% for station in station_list %}
                         <div class="issue">
-                            <h3>{{ issue.station }}</h3>
-                            <p>
-                                {% if issue.text %}
-                                    {{ issue.text }}
-                                {% else %}
-                                    There is no step free access at this station.
-                                {% endif %}
-                                <i>
-                                    {% if issue.start_time %}
-                                        {{ issue.start_time }}
+                            <h3>{{ station.grouper.name }}</h3>
+                            {% for issue in station.list %}
+                                <p>
+                                    {% if issue.text %}
+                                        {{ issue.text }}
+                                    {% else %}
+                                        There is no step free access at this station.
                                     {% endif %}
-                                </i>
-                            </p>
+                                    <i>
+                                        {% if issue.start_time %}
+                                            {{ issue.start_time }}
+                                        {% endif %}
+                                    </i>
+                                </p>
+                                {% if not forloop.last %}
+                                <hr style="border-top-color: #999">
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     {% endfor %}
                 {% else %}
@@ -82,7 +88,7 @@
                         <div class="issue">
                             <h3>{{ issue.station }}</h3>
                             <p>
-                                {{ issue.text }}
+                                {{ issue.text|safe }}
                             </p>
                         </div>
                     {% endfor %}

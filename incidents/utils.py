@@ -1,6 +1,9 @@
 import re
 
 import arrow
+from django.conf import settings
+from django.utils import timezone
+from twython import Twython
 
 A_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -90,3 +93,35 @@ def fix_additional_info_grammar(text):
     text = re.sub(r"[^ \.](Please allow extra time for your journey.)", r". \1", text)
 
     return text
+
+
+def send_tweet(tweet_text):
+    """Send a tweet"""
+    if settings.DEBUG is False:
+        try:
+            twitter = Twython(
+                settings.TWITTER_KEY,
+                settings.TWITTER_SECRET,
+                settings.TUBELIFTS_OAUTH_TOKEN,
+                settings.TUBELIFTS_OAUTH_TOKEN_SECRET,
+            )
+
+            twitter.update_status(status=tweet_text)
+        # Except everything. TODO: Look into some of twitters annoying foibles
+        except:
+            pass
+    else:
+        print("Should have tweeted: " + tweet_text)
+
+
+def update_last_updated():
+    with open("last_updated", "w") as f:
+        f.write(timezone.now().astimezone().strftime("%H:%M %d %b"))
+
+
+def get_last_updated():
+    try:
+        with open("last_updated", "r") as f:
+            return f.read()
+    except FileNotFoundError:
+        return None

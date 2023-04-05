@@ -10,23 +10,16 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from incidents.models import Incident
+from incidents.utils import get_last_updated
 
-ISSUES_QUERY = (
-    Incident.objects.filter(resolved=False)
-    .order_by("station__parent_station__name")
-    .distinct("station__parent_station__name")
+ISSUES_QUERY = Incident.objects.filter(resolved=False, information=False).order_by(
+    "station__parent_station__name"
 )
-RESOLVED_QUERY = (
-    Incident.objects.filter(
-        resolved=True, end_time__gte=timezone.now() - timedelta(hours=12)
-    )
-    .order_by("station__parent_station__name")
-    .distinct("station__parent_station__name")
-)
-INFORMATION_QUERY = (
-    Incident.objects.filter(resolved=False, information=True)
-    .order_by("station__parent_station__name")
-    .distinct("station__parent_station__name")
+RESOLVED_QUERY = Incident.objects.filter(
+    resolved=True, end_time__gte=timezone.now() - timedelta(hours=12)
+).order_by("station__parent_station__name")
+INFORMATION_QUERY = Incident.objects.filter(resolved=False, information=True).order_by(
+    "station__parent_station__name"
 )
 
 
@@ -38,7 +31,12 @@ def detail(request):
     return render(
         request,
         "home.html",
-        {"issues": issues, "resolved": resolved, "information": information},
+        {
+            "issues": issues,
+            "resolved": resolved,
+            "information": information,
+            "last_updated": get_last_updated(),
+        },
     )
 
 

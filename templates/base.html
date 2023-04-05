@@ -51,7 +51,7 @@
         <div class="col-md-6 col-md-offset-3">
             <p>Call TfL's Travel Information Centre on 0343 222 1234 if you need help planning your journey.</p>
 
-            <p>Last updated: ${last_updated}</p>
+            {% if last_updated %}<p>Last updated: {{ last_updated }}</p>{% endif %}
         </div>
     </div>
     <hr>
