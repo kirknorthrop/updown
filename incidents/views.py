@@ -23,6 +23,7 @@ INFORMATION_QUERY = Incident.objects.filter(resolved=False, information=True).or
     "station__parent_station__name"
 )
 
+
 @never_cache
 def detail(request):
     issues = ISSUES_QUERY

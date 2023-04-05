@@ -41,7 +41,8 @@ def check():
                     )
 
                     if not created:
-                        cleared_disruption.remove(report)
+                        if report in cleared_disruption:
+                            cleared_disruption.remove(report)
 
                 except ValueError:
                     pass

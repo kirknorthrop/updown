@@ -1,8 +1,10 @@
 import re
 
 import arrow
+from arrow import ParserError
 from django.conf import settings
 from django.utils import timezone
+from django.utils.timezone import make_aware
 from twython import Twython
 
 A_DAY_IN_SECONDS = 60 * 60 * 24
@@ -49,10 +51,12 @@ def remove_tfl_specifics(text):
 
 
 def parse_date(text):
-    possible_formats = ["D MMMM YYYY", "D MMMM", "MMMM YYYY", "MMMM"]
+    possible_formats = ["D MMMM YYYY", "D MMMM", "MMMM YYYY", "MMMM", "dddd D MMMM"]
+    no_month_formats = ["dddd D"]
 
     try:
         date_ = arrow.get(text, possible_formats)
+
         if "early" in text:
             date_ = date_.replace(day=10)
         if "mid" in text:
@@ -63,10 +67,15 @@ def parse_date(text):
         if date_.year == 1:
             date_ = date_.replace(year=arrow.utcnow().year)
 
-        date_ = date_.naive
+    except ParserError:
+        try:
+            date_ = arrow.get(text, no_month_formats)
+            date_ = date_.replace(year=2)
+        except ParserError:
+            date_ = None
 
-    except:
-        date_ = None
+    if date_:
+        date_ = make_aware(date_.naive)
 
     return date_
 
@@ -83,6 +92,9 @@ def find_dates(text):
 
         while start_date and end_date and end_date < start_date:
             start_date = start_date.replace(year=start_date.year - 1)
+
+        if start_date and end_date and start_date.year == 2:
+            start_date = start_date.replace(year=end_date.year, month=end_date.month)
 
     return start_date, end_date
 

@@ -71,7 +71,8 @@ def check():
                                         report.information = False
                             report.save()
                         else:
-                            cleared_disruption.remove(report)
+                            if report in cleared_disruption:
+                                cleared_disruption.remove(report)
                     except ValueError:
                         pass
 
