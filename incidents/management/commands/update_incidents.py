@@ -20,7 +20,7 @@ def consolidate_incidents():
         incident = None
         for item in incidents:
             # if the same report station and similar text, then same incident
-            if item and SequenceMatcher(None, item.text, report.text).ratio() > 0.9:
+            if SequenceMatcher(None, item.text, report.text).ratio() > 0.9:
                 incident = item
                 break
 
