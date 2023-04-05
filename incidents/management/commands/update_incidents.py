@@ -1,4 +1,5 @@
-from django.conf import settings
+from difflib import SequenceMatcher
+
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
@@ -12,15 +13,22 @@ def consolidate_incidents():
     # Take all the reports and consolidate them into incidents
     for report in Report.objects.filter(resolved=False):
         # Check if there is an incident for this station
-        incident = Incident.objects.filter(
-            station=report.station.parent_station, text=report.text
-        ).first()
+        incidents = Incident.objects.filter(
+            station=report.station.parent_station, resolved=False
+        )
+
+        incident = None
+        for item in incidents:
+            # if the same report station and similar text, then same incident
+            if item and SequenceMatcher(None, item.text, report.text).ratio() > 0.9:
+                incident = item
+                break
 
         if incident is None:
             # Create a new incident
             incident = Incident(
                 information=report.information,
-                station=report.station.parent_station,
+                station=report.station,
                 text=report.text,
                 start_time=report.start_time,
                 end_time=report.end_time,
@@ -43,9 +51,11 @@ def consolidate_incidents():
             # Update the existing incident
             incident.information = report.information
             incident.text = report.text
-            incident.start_time = report.start_time
-            incident.end_time = report.end_time
-            incident.resolved = report.resolved
+            incident.start_time = (
+                report.start_time
+                if report.start_time < incident.start_time
+                else incident.start_time
+            )
             incident.save()
 
         # Add the report to the incident
