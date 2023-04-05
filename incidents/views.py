@@ -14,13 +14,13 @@ from incidents.models import Incident
 from incidents.utils import get_last_updated
 
 ISSUES_QUERY = Incident.objects.filter(resolved=False, information=False).order_by(
-    "station__parent_station__name"
+    "station__parent_station"
 )
 RESOLVED_QUERY = Incident.objects.filter(
     resolved=True, end_time__gte=timezone.now() - timedelta(hours=12)
-).order_by("station__parent_station__name")
+).order_by("station__parent_station")
 INFORMATION_QUERY = Incident.objects.filter(resolved=False, information=True).order_by(
-    "station__parent_station__name"
+    "station__parent_station"
 )
 
 
