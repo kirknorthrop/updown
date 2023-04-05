@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
 from incidents.models import Incident
@@ -22,7 +23,7 @@ INFORMATION_QUERY = Incident.objects.filter(resolved=False, information=True).or
     "station__parent_station__name"
 )
 
-
+@never_cache
 def detail(request):
     issues = ISSUES_QUERY
     resolved = RESOLVED_QUERY
