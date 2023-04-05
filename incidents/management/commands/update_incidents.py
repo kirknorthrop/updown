@@ -28,7 +28,7 @@ def consolidate_incidents():
             # Create a new incident
             incident = Incident(
                 information=report.information,
-                station=report.station,
+                station=report.station.parent_station,
                 text=report.text,
                 start_time=report.start_time,
                 end_time=report.end_time,
