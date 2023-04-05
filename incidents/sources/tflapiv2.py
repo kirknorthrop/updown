@@ -34,7 +34,7 @@ def check():
                     status_details = remove_tfl_specifics(status_details)
 
                     report, created = Report.objects.get_or_create(
-                        station=station,
+                        station=station.parent_station,
                         text=status_details,
                         source=Report.SOURCE_TFLAPI_V2,
                         information=False,
