@@ -28,7 +28,9 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "updownlondon-bayld.ondigitalocean.app",
     "updownlondon.com",
+    "www.updownlondon.com",
     "updownlondon.info",
+    "www.updownlondon.info",
 ]
 
 
