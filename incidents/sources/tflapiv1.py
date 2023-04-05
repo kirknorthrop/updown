@@ -53,7 +53,7 @@ def check():
                             status_details += "<p><i>%s</i></p>" % additional_info
 
                         report, created = Report.objects.get_or_create(
-                            station=station.parent_station,
+                            station=station,
                             text=status_details,
                             source=Report.SOURCE_TFLAPI_V1,
                             information=issue["appearance"] != "RealTime",
