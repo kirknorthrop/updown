@@ -13,22 +13,18 @@ from django.views.decorators.csrf import csrf_exempt
 from incidents.models import Incident
 from incidents.utils import get_last_updated
 
-ISSUES_QUERY = Incident.objects.filter(resolved=False, information=False).order_by(
-    "station__parent_station"
-)
-RESOLVED_QUERY = Incident.objects.filter(
-    resolved=True, end_time__gte=timezone.now() - timedelta(hours=12)
-).order_by("station__parent_station")
-INFORMATION_QUERY = Incident.objects.filter(resolved=False, information=True).order_by(
-    "station__parent_station"
-)
-
 
 @never_cache
 def detail(request):
-    issues = ISSUES_QUERY
-    resolved = RESOLVED_QUERY
-    information = INFORMATION_QUERY
+    issues = Incident.objects.filter(resolved=False, information=False).order_by(
+        "station__parent_station"
+    )
+    resolved = Incident.objects.filter(
+        resolved=True, end_time__gte=timezone.now() - timedelta(hours=12)
+    ).order_by("station__parent_station")
+    information = Incident.objects.filter(resolved=False, information=True).order_by(
+        "station__parent_station"
+    )
 
     return render(
         request,
@@ -43,22 +39,24 @@ def detail(request):
 
 
 def alexa(request):
-    if ISSUES_QUERY.count() == 0:
+    issues = Incident.objects.filter(resolved=False, information=False).order_by(
+        "station__parent_station"
+    )
+
+    if issues.count() == 0:
         alexa_string = "There are currently no reported step free access issues on the \
             Transport for London network."
     else:
         alexa_string = "There are step free access issues at: "
         alexa_string += ", ".join(
-            sorted(
-                ISSUES_QUERY.values_list("station__parent_station__name", flat=True)
-            )[0:-1]
+            sorted(issues.values_list("station__parent_station__name", flat=True))[0:-1]
         )
 
-        if ISSUES_QUERY.count() > 1:
+        if issues.count() > 1:
             alexa_string += " and "
 
         alexa_string += sorted(
-            ISSUES_QUERY.values_list("station__parent_station__name", flat=True)
+            issues.values_list("station__parent_station__name", flat=True)
         )[-1]
 
     alexa_string = alexa_string.replace("&", "and")
