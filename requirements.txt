@@ -16,4 +16,4 @@ pytest
 pytz
 requests-oauthlib
 requests>=2.20.1
-twython
+tweepy

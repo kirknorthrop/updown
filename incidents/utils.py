@@ -1,11 +1,11 @@
 import re
 
 import arrow
+import tweepy
 from arrow import ParserError
 from django.conf import settings
 from django.utils import timezone
 from django.utils.timezone import make_aware
-from twython import Twython
 
 A_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -111,13 +111,8 @@ def send_tweet(tweet_text):
     """Send a tweet"""
     if settings.DEBUG is False:
         try:
-            twitter = Twython(
-                settings.TWITTER_KEY,
-                settings.TWITTER_SECRET,
-                access_token=settings.TUBELIFTS_BEARER_TOKEN,
-            )
-
-            twitter.update_status(status=tweet_text)
+            twitter = tweepy.Client(settings.TUBELIFTS_BEARER_TOKEN)
+            twitter.create_tweet(text=tweet_text)
         # Except everything. TODO: Look into some of twitters annoying foibles
         except:
             pass
