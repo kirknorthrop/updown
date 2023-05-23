@@ -114,8 +114,7 @@ def send_tweet(tweet_text):
             twitter = Twython(
                 settings.TWITTER_KEY,
                 settings.TWITTER_SECRET,
-                settings.TUBELIFTS_OAUTH_TOKEN,
-                settings.TUBELIFTS_OAUTH_TOKEN_SECRET,
+                access_token=settings.TUBELIFTS_BEARER_TOKEN,
             )
 
             twitter.update_status(status=tweet_text)
