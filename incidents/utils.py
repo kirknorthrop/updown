@@ -111,7 +111,12 @@ def send_tweet(tweet_text):
     """Send a tweet"""
     if settings.DEBUG is False:
         try:
-            twitter = tweepy.Client(settings.TUBELIFTS_BEARER_TOKEN)
+            twitter = tweepy.Client(
+                consumer_key=settings.TWITTER_API_KEY,
+                consumer_secret=settings.TWITTER_API_SECRET,
+                access_token=settings.TWITTER_ACCESS_TOKEN,
+                access_token_secret=settings.TWITTER_ACCESS_TOKEN_SECRET,
+            )
             twitter.create_tweet(text=tweet_text)
         # Except everything. TODO: Look into some of twitters annoying foibles
         except:
